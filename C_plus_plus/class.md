@@ -22,6 +22,19 @@
     struct A{
         int price;
             //C中的struct和c++中有区别，c中的不可以定义函数（可以定义函数指针）
+    };
+    void SetPrice(struct A * this, int p){
+        this->price=p;
+    }
+    int main(){
+        ...
+        SetPrice(&A,34);
+        return 0;
+    }
+    //或者可以写成这样
+    struct A{
+        int price;
+            //C中的struct和c++中有区别，c中的不可以定义函数（可以定义函数指针）
         void * SetPrice(struct A *this, int price);
         // SetPrice 是一个函数指针，指向一个void返回型的函数
     };
