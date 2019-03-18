@@ -4,3 +4,4 @@
 *.jpg
 *.java
 *.class
+.gitignore
