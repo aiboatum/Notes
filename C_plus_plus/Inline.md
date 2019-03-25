@@ -2,6 +2,10 @@
 - **inline functions avoid function all overhead**.
   -  *A function specified as inline is expanded "inline" at each call.* 
   -  inline和c中的macro作用类似，但是其机制不同
+    - c style 
+    ```c
+    #define abs(x) ((x)>0)?(x):(-x)
+    ```
 
 ```c++
     #include <string>
