@@ -1,8 +1,7 @@
 #  Class
 - *Class(keywords class and keywords sturct)*
-  - **定义在class内的函数隐含为inline函数**
-  - *this指针和c中的struct有关系*
-- **this pointer**
+  - **Functions defined in the class are inline implicitly**
+- **introducing $this$ pointer**
 ```c++
 std::string isbn() const {return bookNO;}
 
@@ -10,9 +9,34 @@ std::string isbn() const {return bookNO;}
 std::string isbn() const {return this->bookNO;}
 std::string isbn() const{return (*this).bookNO;}
 
-total.isbn();
+total.isbn();   //total is a Sales_data object.
 Sales_data::isbn(&total);
+// the compiler pass the address of Sales_date object
+// to the implicit 'this' parameter in isbn().
+// when we create a object of some classes, 
+// 'this' pointer points to this object, 
+// that is taking the address of this object.
 ```
+- **Introducing const Menber functions**
+```c++
+std::string isbn() const{return bookNO};
+```
+what's the purpose of the const?
+>1. In c++, the $this$ pointer is a const pointer.
+And $this$ pointer points to the nonconst version of the class type. Hence, $this$ pointer cannot point to a const object, **that is, we connot bind ${this}$ to a $const$ object.**
+>2. by default, the type of this pointer is Sales_data *$const$.
+>3. **the purpose of that const is to modify the type of the the implicit $this$ pointer**, hence we can call this member function on a $const$ object. The type of $this$ will be $const$ Sales_data * $const$.
+>4. **A $const$ following the parameter list indicates that $this$ is a pointer to $const$.**
+```c++
+// pseudo-code illustration of how the implicit 'this' pointer is used
+// the following code is illegal: we may not explicitly define the this pointer ourselves.
+std::string Sales_date::isbn(const Sales_data *const this){
+    return this->bookNO;
+}
+```
+
+**the fact that $this$ is a pointer to $const$ means that $const$ member functions connot change the object on which they are called.** 
+
     ```c++
     class A{
         public:
