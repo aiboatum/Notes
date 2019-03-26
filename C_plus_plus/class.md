@@ -1,7 +1,18 @@
 #  Class
-##  Class(keywords class and keywords sturct)
-  - 定义在class内的函数隐含为inline函数
-  - this指针和c中的struct有关系
+- *Class(keywords class and keywords sturct)*
+  - **定义在class内的函数隐含为inline函数**
+  - *this指针和c中的struct有关系*
+- **this pointer**
+```c++
+std::string isbn() const {return bookNO;}
+
+//equivalent to 
+std::string isbn() const {return this->bookNO;}
+std::string isbn() const{return (*this).bookNO;}
+
+total.isbn();
+Sales_data::isbn(&total);
+```
     ```c++
     class A{
         public:
