@@ -53,7 +53,7 @@ void bar(const std::string &s1,const std::string &s2,bool (*pf)(const std::strin
 //call the function bar
 bar(s1,s2,lengthCompare);
 ```
-- return pointer to function
+- **return pointer to function**
 ```c++
 // 'using'
 using F=int(int *,int);
