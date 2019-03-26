@@ -53,7 +53,7 @@ void bar(const std::string &s1,const std::string &s2,bool (*pf)(const std::strin
 //call the function bar
 bar(s1,s2,lengthCompare);
 ```
-- return pointer to function
+- **return pointer to function**
 ```c++
 // 'using'
 using F=int(int *,int);
@@ -77,4 +77,27 @@ string::size_type sumLenth(const std::string &,const std::string &);
 
 decltype(sumLenth) *getFoo(const std::string &);
 
+```
+- **example**
+```c++
+#include <iostream>
+#include <vector>
+int foo(int,int);
+int foo(int a,int b){
+    return a+b;
+}
+int bar(int,int);
+int bar(int  a,int b){
+    return a-b;
+}
+int main(){
+    using f=int(*)(int,int);
+    std::vector <f> ret;
+    decltype(foo) *p1=foo;
+    decltype(foo) *p2=&bar;
+    ret.push_back(p1);
+    ret.push_back(p2);
+    std::cout<<ret[0](1,2)<<std::endl;
+    std::cout<<(*ret[1])(1,2)<<std::endl;
+}
 ```
