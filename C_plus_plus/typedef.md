@@ -1,4 +1,13 @@
 # typedef sepcifier
+- typedef is one of type alias
+```c++
+//we can use the keywords typedef as the following shows.
+typedef double wages;// wages is equivalent to double
+typedef wages  base,* p;// base is synonymous with double , p is synonymous with duoble *.
+typedef struct list LIST;// LIST is equivalent to struct list;
+
+
+```
 ```c++
 bool bar(const int &,const int &);
 // foo1 and foo2 have the function type.

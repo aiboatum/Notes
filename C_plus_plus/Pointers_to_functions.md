@@ -53,3 +53,28 @@ void bar(const std::string &s1,const std::string &s2,bool (*pf)(const std::strin
 //call the function bar
 bar(s1,s2,lengthCompare);
 ```
+- return pointer to function
+```c++
+// 'using'
+using F=int(int *,int);
+using pF=int(*)(int *,int); 
+//pF is pointer to function
+
+pF f1(int);// ok
+F f1(int);// error, cannot return the funtion type
+F * f1(int);// ok, explicitly declare the returning type
+
+
+// Also, we can write it as the form
+// f1 is function that takes one parameter returning pointer type, which points to function that takes two parameters and returns int type. 
+int (*f1(int))(int *,int);
+// but this declaration is so complicated.
+// we apply the auto to declare this.
+auto f1(int)->int(*)(int *,int);
+
+// use the decltype 
+string::size_type sumLenth(const std::string &,const std::string &);
+
+decltype(sumLenth) *getFoo(const std::string &);
+
+```
