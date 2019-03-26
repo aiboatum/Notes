@@ -36,6 +36,23 @@ std::string Sales_date::isbn(const Sales_data *const this){
 ```
 
 **the fact that $this$ is a pointer to $const$ means that $const$ member functions connot change the object on which they are called.** 
+- *class scope and member funcitons*
+- **define a menber function outside the class**
+  1. the member functions defined outside the class will be treated as inside the scope of the classes.
+  2. the member functions defined outside the class can use the data members of class.(the reason is explained in 1)
+- **define a function to return 'this' object**
+```c++
+// 'this' pointer binds to the object on which the member functions is called.
+Sales_date & Sales_date::combine(const Sales_data * s){
+    this->a+=s->a;
+    this->b+=s->b;
+    return *this;//return the object on which the function was called
+}
+Sales_date s1();
+Sales_date s2();
+s1.combine(s2);// return s1
+s2.conbine(s1);// return s2
+```
 
     ```c++
     class A{
