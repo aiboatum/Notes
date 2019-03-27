@@ -1,55 +1,59 @@
-#   结构体与类
-- c中结构体内不可以直接定义函数
-- c中的结构体不可以初始化
-- c++均可以
-  C中使用结构体实现面向对象中的method().
-  ```c++
-    #include <iostream>
-    #include <string>
-    //using namespace std;
-    class HELLO{
-        public:void sayHello(string name){
-            std::cout<<"Hello!"<<name<<std::endl;
-        }
-    };
+#   struct and class 
+##  struct in c and c++
+1. `In c, functions cannot be declared (and defined) directly in the body of struct`
+2. `In c, the data member cannot be initialized in the struct`
 
+```c
+typedef struct A{
+    int foo();  // error
+    int (*pf)(void); // ok ,pf is a pointer to function that take no parameter returning int type
+    int a;      // ok
+    int b=0;    // error
+    char *s;    // ok
+    char * string ="string";// error
+};
+```
+3. `In c++, the only difference between struct and class is the default access level, therefore there is no restrictions like that in c.`
+4. `We can implement the method that is one of concepts in class by using struct in c.`
 
-    int main(){
-        HELLO *hello=new HELLO();
-        hello->sayHello("a");
-        delete(hello);
-        return 0;
-    }
-
-    //现在使用纯C实现上面的功能
-    #include <stdio.h>
-    #include <stdlib.h>// malloc
-    struct HELLO{
-        void *sayHello(char *name);
-    };
-    void sayHello(char *name){
+**demo**
+```c++
+#include <iostream>
+#include <string>
+struct HELLO {
+    public:
+	void sayHello(const std::string name) {
+		std::cout << "Hello " << name << std::endl;
+	}
+};
+int main() {
+    //HELLO hello = HELLO();
+    //hello.sayHello("World!");
+    //equivalent statement to the following
+    HELLO *hello = new HELLO();
+    hello->sayHello("World!");
+    delete(hello);
+}
+```
+**In c, we can do that as the following form.**
+```C
+#include <stdio.h>
+#include <stdlib.h>// malloc
+struct HELLO{
+    // sayHello is a pointer to function
+    void (*sayHello)(const char *name);
+    //void *sayHello(const char *name); //error: sayHello has function type.
+};
+void sayHello(const char *name){
         printf("Hello ,%s\n",name);
-    }
-    int main(){
-        struct HELLO *hello=(struct HELLO *)malloc(sizeof(*hello));
-            hello->sayHello=sayHello;//结构体内的每个函数都需要指向对应的函数地址（函数名即可）
-        hello->sayHello("a");
-        free(hello);
-        return 0;
-    }
-    //当然C++中类外定义函数就和C风格很像了
-    #include <iostream>
-    #include <string>
-    class HELLO{
-        public:void sayHello(string name);
-    };
-    void HELLO::sayHello(string name){
-        std::cout<<"Hello!"<<name<<std::endl;
-    }
-    int main(){
-        HELLO *hello=new HELLO();
-        hello->sayHello("a");
-        delete(hello);
-        return 0;
-    }
-  ```
+}
+int main(){
+    //struct HELLO hello;
+    //hello.sayHello=sayHello;
+    //hello.sayHello("World!");
+    struct HELLO *hello=(struct HELLO *)malloc(sizeof(*hello));
+    hello->sayHello=sayHello;
+    hello->sayHello("World!");
+    free(hello);
+}
+```
