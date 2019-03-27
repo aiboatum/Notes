@@ -155,24 +155,54 @@ int main(){
   4. `friends are not members of the class`
   5. `friends are not affected by the access control of the public or private`
   6. `firend declaration only specifies access`
-
+  7. `firend functions or class cannot directly access the nonpublic members, which can be accessed by object (in which declares friends functions or class)`
 - *demo*
-
+    ```c++
+    class A{
+        private:
+            int a;
+        public:
+            A()=default;
+            friend void foo();// just indicate that the function foo is a friend to Class A
+            friend void bar();
+    };
+    //outside the class should have the declaration of functions
+    void foo();
+    int main(){
+        foo();//ok
+        bar();//error
+    }
+    ```
+    8. `the definition of friends can be inside or outside body of a class`
         ```c++
-        class A{
-            private:
-                int a;
-            public:
-                A()=default;
-                friend void foo();// just indicate that the function foo is a friend to Class A
-                friend void bar();
+        #include <iostream>
+        #include <string>
+        #include <vector>
+        class A {
+        private:
+            int a = 123;
+        public:
+            A() = default;
+            A(int a) :a(a) {}
+            friend void foo() {
+                A a = A(234);
+                std::cout << a.a;
+            }
+            friend void foo(A &a) {
+                std::cout << a.a;
+            }
+
         };
-        //outside the class should have the declaration of functions
-        void foo();
-        int main(){
-            foo();//ok
-            bar();//error.
+        void foo(); // there must exists this declaration ouside class. otherwise, the call to foo() will be failed.
+        void bar() {
+            A a = A(123);
+            foo(a);// but, this seem to need no sperate declaration outside the class.
+            foo();
         }
+        int main()
+        {	
+            bar();
+        }  
         ```
   - **friends functions(ordinary functions)**
 ```c++
