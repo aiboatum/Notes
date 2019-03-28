@@ -56,7 +56,7 @@ s2.conbine(s1);// return s2
 - **defining nonmember class-related functions**
   - ***Ordinarily, nonmember functions that are part of the interface of a class should be declared in the same header as the class itself.***
 ---
-- **example**
+- **demo**
 ```c++
 class A{
     public:
@@ -66,17 +66,16 @@ class A{
 void A::SetPrice(int p){
     price=p;
 }
-
 int main(void){
     A a=A();
     a.SetPrice(34);
-    return 0;
 }
-    
-//早起缺少c++编译器，需转换为c
+// In the early time, c++ source code will be converted to c source code, because of having no compilers for c++.
 struct A{
+    //There exsits difference among struct in c and in c++.
+    //Functions cannot be defined in c, but which can be done in c++.
+    //Also, the pointers to functions can be defined in c. 
     int price;
-        //C中的struct和c++中有区别，c中的不可以定义函数（可以定义函数指针）
 };
 void SetPrice(struct A * this, int p){
     this->price=p;
@@ -86,19 +85,18 @@ int main(){
     SetPrice(&A,34);
     return 0;
 }
-//或者可以写成这样
+
+// the another equivalent form
 struct A{
     int price;
-    //C中的struct和c++中有区别，c中的不可以定义函数（可以定义函数指针）
-    void * SetPrice(struct A *this, int price);
-    // SetPrice 是一个函数指针，指向一个void返回型的函数
+    void (*SetPrice)(struct A *this, int price);
 };
 void SetPrice(struct A * this, int p){
     this->price=p;
 }
 int main(){
     struct A * a=(struct A *)malloc(sizeof(*a));
-    a->SetPrice=SetPrice;
+    a->SetPrice=SetPrice;   // the pointer SetPrice points to function SetPrice
     a->SetPrice(a,34);
     return 0;
 }
