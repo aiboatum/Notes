@@ -148,7 +148,6 @@ int main(){
 - **friends**
   1. `A class can allow another class or function to access its nonpublic members by making that class or function a friend.`
   2. `friend declarations for nonmember functions should be added to the body of class` 
-
   3. `friends declarations may appear only inside a class definition, they can appear anywhere in the class.`
   4. `friends are not members of the class`
   5. `friends are not affected by the access control of the public or private`
@@ -202,7 +201,16 @@ int main(){
             bar();
         }  
         ```
-  - **friends functions(ordinary functions)**
-```c++
-
-```
+---
+- **Class declarations**
+    1. `class A;// this is a declaration of the A class, but not initialized. The type A is an incomplete type, that is, we do not know the members that A contians. Moreover, it is better to not make such declarations.`
+    ```c++
+    //  we can define pointers or reference to such type (incomplete type), 
+    //  thus we can declare (but not define) functions that use an imcomplete type as a parameter or return type. Which seems to relative to C.
+    struct List{
+        int a;
+        struct List *pre;   //ok
+        struct List next;   //error
+    };
+    ```
+    2. `class A can be data members of class B only if the B has been defined (not only declaration), which means that the clas A is a complete type and  the complier knows the storage that the A needs.`
