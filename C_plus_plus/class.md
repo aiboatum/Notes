@@ -19,26 +19,28 @@ Sales_data::isbn(&total);
 ```
 ---
 - **Introducing const Menber functions**
-`std::string isbn() const{return bookNO};`
+```c++
+std::string isbn() const{return bookNO};
+```
 what's the purpose of the const?
->1. In c++, the $this$ pointer is a const pointer.
-And $this$ pointer points to the nonconst version of the class type. Hence, $this$ pointer cannot point to a const object, **that is, we connot bind ${this}$ to a $const$ object.**
->2. by default, the type of this pointer is Sales_data *$const$.
->3. **the purpose of that const is to modify the type of the the implicit $this$ pointer**, hence we can call this member function on a $const$ object. The type of $this$ will be $const$ Sales_data * $const$.
->4. **A $const$ following the parameter list indicates that $this$ is a pointer to $const$.**
+  1. `In c++, the $this$ pointer is a const pointer. And $this$ pointer points to the nonconst version of the class type. Hence, $this$ pointer cannot point to a const object, that is, we connot bind ${this}$ to a $const$ object.`
+  2. `by default, the type of this pointer is Sales_data *$const$.`
+  3. `the purpose of that const is to modify the type of the the implicit $this$ pointer, hence we can call this member function on a $const$ object. The type of $this$ will be $const$ Sales_data * $const$.`
+  4. `A $const$ following the parameter list indicates that $this$ is a pointer to $const$.`
+
 ```c++
 // pseudo-code illustration of how the implicit 'this' pointer is used
 // the following code is illegal: we may not explicitly define the this pointer ourselves.
 std::string Sales_date::isbn(const Sales_data *const this){
-    return this->bookNO;
+    return this->bookN
 }
 ```
 ---
-**the fact that $this$ is a pointer to $const$ means that $const$ member functions connot change the object on which they are called.** 
+**The fact that $this$ is a pointer to $const$ means that $const$ member functions connot change the object on which they are called.** 
 - *class scope and member funcitons*
 - **define a menber function outside the class**
-  1. the member functions defined outside the class will be treated as inside the scope of the classes.
-  2. the member functions defined outside the class can use the data members of class.(the reason is explained in 1)
+  1. `the member functions defined outside the class will be treated as inside the scope of the classes.`
+  2. `the member functions defined outside the class can use the data members of class.(the reason is explained in 1)`
 - **define a function to return 'this' object**
 ```c++
 // 'this' pointer binds to the object on which the member functions is called.
@@ -103,17 +105,17 @@ int main(){
 ```
 ---
 - **constructors**
-    - *constructors is a special member functions to initialize the data menbers of a class object*
-    - *constructors can be defined as more than one form, that is, a class can have multiple constructors to initialize objects differently. these different constructors can be viewed as overload functions*
-    - *constructor is run when an object of a class type is created*
-    - *constructor has no return type*
+    1. `constructors is a special member functions to initialize the data menbers of a class object`
+    2. `constructors can be defined as more than one form, that is, a class can have multiple constructors to initialize objects differently. these different constructors can be viewed as overload functions`
+    3. `constructor is run when an object of a class type is created`
+    4. `constructor has no return type`
 - **constructor initializer list**
     ```c++
     Sales_data(const std::string &s):bookNo(s){}
     Sales_data(const std::string &s,unsigned n,double p)
         :bookNo(s),units_sold(n),revenue(p*n){}
     ```
-    - ***when a member is omitted from the constructor initializer list,it is implicitly initialized using the same process as is used by the synthesized default constructor***
+- ***When a member is omitted from the constructor initializer list,it is implicitly initialized using the same process as is used by the synthesized default constructor***
     ```c++
     //like this:
     Sales_data(const std::string &s):
@@ -121,7 +123,6 @@ int main(){
     
     Sales_data():
         bookNo(""),units_sold(0),revenue(0){}
-    
 
     //demo:
     #include <string>
@@ -131,7 +132,6 @@ int main(){
         int a;
         int b;
         std::string s;
-  
     public:
         //constructor
         myclass():a(2),b(3),s("2+3"){}
@@ -188,7 +188,6 @@ int main(){
             friend void foo(A &a) {
                 std::cout << a.a;
             }
-
         };
         void foo(); // there must exists this declaration ouside class. otherwise, the call to foo() will be failed.
         void bar() {
