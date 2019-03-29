@@ -21,7 +21,6 @@
 //the extern keywords tells the complier the bufsize may be used in ohter source files.
 extern const int bufsize=3;
 
-
 //file_2.cpp
 //all of file_1.cpp and file_2.cpp should be complied. 
 extern int bufsize;
