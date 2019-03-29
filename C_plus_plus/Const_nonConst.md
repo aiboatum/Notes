@@ -1,4 +1,49 @@
 #   const and nonconst
+1. `const object must be initialized explicitly`
+   ```c++
+   const int a;// error
+   const int b=3;// ok
+   int main(){
+        const int a;// error
+        b=4;// error, b is a const type
+   }
+   ```
+2. `const object will be initialized at the run time and complie time`
+   ```c++
+   const int i=get_size();// ok, intialized at run time
+   const int i=1024;// ok, initialized at complie time
+   ```
+3. `in order to avoid the conflict the same names of const objects arise, therefore const objects are defined as local to the source file, which means that it is avaliable only in this source file.`
+4. `using the extern, we can use a const object in different source files.`
+```c++
+//file_1.cpp 
+//define and initializes a const object that is accessible to other files
+//the extern keywords tells the complier the bufsize may be used in ohter source files.
+extern const int bufsize=3;
+
+
+//file_2.cpp
+//all of file_1.cpp and file_2.cpp should be complied. 
+extern int bufsize;
+
+___________________________________________________
+//also, we can do that by puting extern objects into one header files.
+// header.h
+extern int bufsize;
+extern std::string s;
+...
+//file_1.cpp
+extern int bufsize=3;
+extern std::string s="123";
+
+//file_2.cpp
+#include "header.h"
+int main(){
+    std::cout<<s<<std::endl;
+    std::cout<<bufsize<<std::endl;
+}
+```
+**demo**
 ```c++
 #include <iostream>
 #include <string>
@@ -40,4 +85,21 @@ int main() {
 	std::cout << **p3<<" "<<**p4;
 	return 0;
 }
+```
+**reference to const**
+1. `reference is implicit const. Since the reference must be initialized, and cnanot bind anoter object.`
+2. `nonconst reference cannot bind a const object`
+```c++
+const int ci=1024;
+const int &r1=ci; // ok
+
+r1=43;// ri reference a const object
+int &r2=ci;//error
+
+int ci=1024;
+const int &r=ci;// ok,a reference to const can bind a nonconst object.
+
+const int &r=1024;// 
+const int i=3;
+const int &r=i*2;// ok, i*2 is const expersion
 ```
