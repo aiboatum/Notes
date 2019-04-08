@@ -47,3 +47,5 @@ constexpr functions will be restricted by the following rules:
 constexpr int new_sz(){return 42;}//ok
 constexpr int foo=new_sz();
 ```
+**constexpr constructor**
+`//pass`
