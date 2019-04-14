@@ -12,7 +12,7 @@ class myclass{
         void show_nonstatic();
 };
 int main(){
-    //we can access a static member directly through the scope operator.
+    // we can access a static member directly through the scope operator.
     myclass::show_static();//ok
     show_static();//error
     myclass m1;
@@ -42,7 +42,7 @@ class myclass{
         }
         void show_nonstatic();
 };
-// we also can define the static member function
+// we can also define the static member function
 // the keyword static will be removed and add the scope opreator into the definition.
 void myclass::show_static(){
     //...
