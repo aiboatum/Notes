@@ -1,5 +1,5 @@
 #   constexpr
-constexpr is one of keywords introduced in Standard c++11. It refers to const expresion, which can be evaluated in the compile time. Such as, the resutls returned by sizeof, the literals(integer literal,string literal,etc.), the address of the gobal functions/variables and so forth.
+constexpr is one of keywords introduced in Standard c++11. It refers to const expresion, **which can be evaluated in the compile time.** Such as, the resutls returned by sizeof, the literals(integer literal,string literal,etc.), the address of the gobal functions/variables and so forth.
 
 A const object intialized by const expresion(such as ,literals) is a const expression. Whether a object(expresion) is constexpr or not depends on its type and intializations.
 ```c++
@@ -7,7 +7,7 @@ const int max_files=20;// max_files is a constexpr.
 const int limit_=max_files+1;// limit_ is a constexpr.
 
 int run_time_size=23;// it is not a constexpr.
-const run_get_size=getSize();// getSize() is a run-time function.
+const int run_get_size=getSize();// getSize() is a run-time function.
 
 
 // In c++11, we can do this explicitly.

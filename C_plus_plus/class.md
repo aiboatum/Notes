@@ -1,7 +1,9 @@
 #  Class
-- *Class(keywords class and keywords sturct)*
+- *Class(keywords class and keywords sturct)*.
+> The only difference between using class and using struct to define a class is the default access level.
   - **Functions defined in the class are inline implicitly**
-- **introducing $this$ pointer**
+
+## Introduce $this$ pointer
 ```c++
 std::string isbn() const {return bookNO;}
 
@@ -18,7 +20,8 @@ Sales_data::isbn(&total);
 // that is taking the address of this object.
 ```
 ---
-- **Introducing const Menber functions**
+
+# Introduce const Menber functions
 ```c++
 std::string isbn() const{return bookNO};
 ```
@@ -57,6 +60,15 @@ s2.conbine(s1);// return s2
 ---
 - **defining nonmember class-related functions**
   - ***Ordinarily, nonmember functions that are part of the interface of a class should be declared in the same header as the class itself.***
+
+An simple example is given here.
+```c++
+Sales_data add(const Sales_data &a,const Sales_data &b){
+    // do something with a and b
+    // return a reference of Type Sales_data 
+}
+```
+
 ---
 - **demo**
 ```c++
@@ -107,7 +119,7 @@ int main(){
 - **constructors**
     1. `constructors is a special member functions to initialize the data menbers of a class object`
     2. `constructors can be defined as more than one form, that is, a class can have multiple constructors to initialize objects differently. these different constructors can be viewed as overload functions`
-    3. `constructor is run when an object of a class type is created`
+    3. `constructor will be excuted when an object of a class type is created`
     4. `constructor has no return type`
 - **constructor initializer list**
     ```c++
@@ -181,25 +193,23 @@ int main(){
         public:
             A() = default;
             A(int a) :a(a) {}
-            friend void foo() {
-                A a = A(234);
-                std::cout << a.a;
+            void bar() {
+                std::cout << a.a;// ok, private variable can be accessed by its member functions inside the class.
             }
             friend void foo(A &a) {
+                // ok, foo() is a friend function, and is thereby able to access its unpublic member of class A.
                 std::cout << a.a;
+                // this function can also be defined outside the class.
             }
         };
         void foo(); // there must exists this declaration ouside class. otherwise, the call to foo() will be failed.
-        void bar() {
-            A a = A(123);
-            foo(a);// but, this seem to need no sperate declaration outside the class.
-            foo();
-        }
         int main()
-        {	
+        {	foo();
             bar();
         }  
         ```
+> remark:the friend function or class can access the non-public members of class, which means that the private members of class can be accessed through the object of the class. Objects of a class can generally only access non-public objects through member functions of the class.
+
 ---
 - **Class declarations**
     1. `class A;// this is a declaration of the A class, but not initialized. The type A is an incomplete type, that is, we do not know the members that A contians. Moreover, it is better to not make such declarations.`
