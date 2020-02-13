@@ -177,6 +177,7 @@ What happens when a member is destroyed depends on the type of the member:
 > Smart pointers are class type and have destructors. As a result, members that are smart pointers are automatically destroyed during the destruction phase.
 
 **When a Destructor Is Called**
+
 The destructor is used automatically whenever an object of its type is destroyed:
 * variables are destroyed when they go out of scope.
 * members of an object are destroyed when the object of which they are a part is destroyed.
