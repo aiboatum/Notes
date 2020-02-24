@@ -26,34 +26,34 @@ Sales_data::isbn(&total);
 std::string isbn() const{return bookNO};
 ```
 what's the purpose of the const?
-  1. `In c++, the $this$ pointer is a const pointer. And $this$ pointer points to the nonconst version of the class type. Hence, $this$ pointer cannot point to a const object, that is, we connot bind ${this}$ to a $const$ object.`
-  2. `by default, the type of this pointer is Sales_data *$const$.`
-  3. `the purpose of that const is to modify the type of the the implicit $this$ pointer, hence we can call this member function on a $const$ object. The type of $this$ will be $const$ Sales_data * $const$.`
-  4. `A $const$ following the parameter list indicates that $this$ is a pointer to $const$.`
+  1. In c++, the `this` pointer is a const pointer. And `this` pointer points to the `nonconst` version of the class type. Hence, `this` pointer cannot point to a `const` object, that is, we connot bind `this` to a `const` object.
+  2. The purpose of that `const` is to modify the type of the the implicit `this` pointer, hence we can call this member function on a `const` object. The type of `this` will be `const Sales_data * const.`
+  4. A `const` following the parameter list indicates that `this` is a pointer to `const`.
 
 ```c++
 // pseudo-code illustration of how the implicit 'this' pointer is used
 // the following code is illegal: we may not explicitly define the this pointer ourselves.
-std::string Sales_date::isbn(const Sales_data *const this){
-    return this->bookN
+std::string Sales_data::isbn(const Sales_data *const this){
+    return this->bookN;
 }
 ```
 ---
-**The fact that $this$ is a pointer to $const$ means that $const$ member functions connot change the object on which they are called.** 
-- *class scope and member funcitons*
+> The fact that `this` is a pointer to `const` means that `const` member functions connot change the object on which they are called.
+
+- class scope and member funcitons
 - **define a menber function outside the class**
-  1. `the member functions defined outside the class will be treated as inside the scope of the classes.`
-  2. `the member functions defined outside the class can use the data members of class.(the reason is explained in 1)`
-- **define a function to return 'this' object**
+  1. the member functions defined outside the class will be treated as inside the scope of the classes.
+  2. the member functions defined outside the class can use the data members of class.(the reason is explained in 1)
+- define a function to return `this` object
 ```c++
 // 'this' pointer binds to the object on which the member functions is called.
-Sales_date & Sales_date::combine(const Sales_data * s){
+Sales_date & Sales_data::combine(const Sales_data * s){
     this->a+=s->a;
     this->b+=s->b;
     return *this;//return the object on which the function was called
 }
-Sales_date s1();
-Sales_date s2();
+Sales_data s1();
+Sales_data s2();
 s1.combine(s2);// return s1
 s2.conbine(s1);// return s2
 ```
