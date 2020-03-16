@@ -1,8 +1,6 @@
-[TOC]
 # Swap
 
 Let's recall the conception of swap operation.
-
 ```c++
 int a=3;
 int b=4;

@@ -1,4 +1,3 @@
-[TOC]
 # Classes That Manage Dynamic Memory
 
 In this section, we'll implement a simplification of the library `vector` class.

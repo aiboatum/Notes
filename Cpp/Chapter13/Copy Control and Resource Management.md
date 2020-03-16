@@ -1,4 +1,3 @@
-[TOC]
 # Copy Control and Resource Management
 
 Ordinarily, classes that manage resources that do not reside in the class must define the copy-control members (copy constructor,move constructor,copy-assignment,destructor).For example, the data member allocated by `new`. 

@@ -1,4 +1,3 @@
-[Toc]
 **Copy control**
 > When we define a class, we specify-explicitly or implicitly-what happens when objects of that class type are copied, moved, assigned, and destroyed.
 
@@ -297,7 +296,19 @@ For some cases, the compiler defines these synthesized members as delted functio
     ```c++
     // It is impossible to assign a new value to a const object.
     // But we can reassign a new value to a reference member. 
+    class Foo{
+        private:
+            std::string s;// “工具人”
+            std::string &str=s;// 默认使用s绑定左值引用str
+        public:
+            Foo()=default;// 不适用初始化列表绑定str的时候，str默认绑定到s上
+
+            Foo(const string &s1,string &s2):s(s1),str(s2){}// 直接使用s绑定str
+            // member functions
+    };
     Foo &operator=(const Foo &f){
+        // 虽然合法，但是我们改变的不是this 对象中的引用本身，而且引用指向对象的值，因此该行为不是我们所希望的。
+        this->s=f.s;
         this->str=f.str;
         return *this;
     }

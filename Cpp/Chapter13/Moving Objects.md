@@ -1,4 +1,3 @@
-[TOC]
 # Moveing Obejcts
 
 A reason to move rather than copy occurs in classes such as the IO or `unique_ptr` classes. These classes have a resource (such as a pointer or an IO buffer) that may not be shared. Hence, objects of these types cannot be copied but can be moved.
