@@ -19,7 +19,6 @@ class Quote{
         double price=0.0;
 };
 ```
-1   ~`jhbbbbbbbbbbbbbbbbbbbbbbvvvvvvv
 Now, it is worth noting that classes used as the root of an inheritance hierarchy almost always define a virtual destructor. Virtual destructors are needed even if they do no work.
 
 
