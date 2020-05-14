@@ -483,6 +483,216 @@ vector vec;// 不知道生成什么类型的类对象
 
 Whenever we use a class template, we must always follow the template's name with brackets. **The brackets indicate that a class must be instantiated from a template**. In particular, if a class template provides default arguments for all of its template parameters, and we want to use those defaults, we must put an empty bracket pair following the  template's name:
 ```c++
+template<class T=int> 
+class Numbers{
+    // by default T is int
+    public:
+    Numbers(T v=0):val(v){}
+    private:
+    T val;
+};
+Numbers<long double> lots_of_precision;
+Numbers<> average_precision; // empty<> says we want the default type
+```
+
+## Member Templates
+
+A class-either an ordinary class or a class template-may have a member function that is itself a template. Such template are referred to as **member templates**. 
+> **Member templates may not be virtaul**
+
+
+**Member Templates of Ordinary (Nontemplate) Classes**
+
+As an example:
+```c++
+class DebugDelete{
+    public:
+    DebugDelete(std::ostream &s=std::cerr):os(s){}
+    // as with any function template, the type of T is deduced by the compiler
+    template<typename T>
+    void operator()(T *p)const{// overloaded function call operator
+        os<<"deleting unique_ptr"<<std::endl;
+        delete p;
+    }
+    private:
+    std::ostream &os;
+};
+```
+
+Each `DebugDelete` object has an `ostream` member on which to write, and a member function that is itself a template. We can use this class as a replacement for `delete`:
+```c++
+double *p=new double;
+DebugDelete d;// an object that can act like a delete expression
+d(p);// calls DebugDelete::operator()(double *), which deletes p
+int *ip=new int;
+// calls operator()(int *) on a temporary DebugDelete object
+DebugDelete()(ip);
+```
+
+We can also use `DebugDelete` as the deleter of a `unique_ptr`. We supply the type of the deleter inside brackets and supply an object of the deleter type to the constructor:
+```c++
+// destroying the object to which p points
+// instantiates DebugDelete::operator()<int> (int*)
+// DebugDelete must be a function-like class
+unique_ptr<int, DebugDelete> p(new int, DebugDelete());
+
+// instantiates DebugDelete::operator()<string>(string *)
+unique_ptr<string, DebugDelete> sp(new string, DebugDelete());
+```
+Here, we've said that `p'`s deleter will have type `DebugDelete`, and we have supplied an unnamed object of that type in `p'`s constructor.
+
+The `unique_ptr` destructor calls the `DebugDelete`'s call operator will also be instantiated: Thus, the definition above will be instantiate:
+```c++
+// sample instantiations for member templates of DebugDelete
+void DebugDelete::operator()(int *p)const{delete p;};
+void DebugDelete::operator()(string *p)const{delete p;}
+```
+
+**Member Template of Class Templates**
+
+In this case, both the class and the member have their own, independent, template parameters.
+```c++
+template<typename T> 
+class Blob{
+    template<typename It>
+    Blob(It b,It e);
+};
+```
+We give our `Blob` class a constructor that will take two iterators.
+
+Unlike ordinary function members of class templates, member templates are function templates. When we define a member template outside the body of a class template, we must provide the template parameter list for the class template and for teh function template. The parameter list for the class template comes first, followed by the member's own template parater list:
+```c++
+template<typename T>
+template<typename It>
+Blob<T>::Blob(It b,It e):data(std::make_shared<std::vector<T>>(b,e)){}
+```
+
+**Instantiation and Member Templates**
+
+与往常一样，我们在哪个对象上调用成员模板，编译器就根据该对象的类型来推断模板参数的实参。As usual, the compiler typically deduces template arguments for the member template's own parameter(s) from the arguments passed in the call.
+```c++
+int ia[]={0,1,2,...,9};
+vector<long > vi={0,1,2,...,9};
+list<const char *> w={"now","is","the","time"};
+// instantiates the Blob<int> class
+// and the Blob<int> constructor that has two int * parameters
+Blob<int> a1(begin(ia),end(ia));
+// instantiates the Blob<int> constructor that has
+// two vector<long>::iterator parameters
+Blob<int> a2(vi.begin(),vi.end());
+// instantiates the Blob<string> class and the Blob<string>
+// constructor that has two list<const char *>::iterator parameters
+Blob<string> a3(w.begin(),w.end());
+```
+
+When we define `a1`, we explicitly specify that the compiler should instantiate a version of `Blob` with the template parameter bound to `int`. The type parameter for the constructor's own parameters will be deduced from the type of `begin(ia)` and `end(ia)`. That type is `int*`. Thus, the definition of `a1` instantiates:
+``Blob<int>::Blob(int *,int *);``
+
+## Controlling Instantiations
+
+The fact that instantiations are generated when a template is used means that the same instantiation may appear in multiple object files. When two or more seperately compiled source files use the same template with the same template arguments, there is an instantiation of that template in each of those files.
+
+In large systems, the overhead of instantiating the same template in multiple files can become significant. Under the standard c++11, we can avoid this overhead through an **explicit instantiation**. An explicit instantiation has the form:
+```c++
+extern template declaration; // instantiation declaration
+template declaration;   // instantiation definition
+```
+Here, declaration is a class or function declaration in which all the template parameters are replaced by the template arguments. For example,
+```c++
+// instantion declaration and definition
+extern template class Blob<string>;           // declaration
+template int compare(const int &,const int &);// definition
+```
+When the compiler sees an `extern` template declaration, it will not generate code for that instantiation in that file. Declaring an instantiation as `extern` is a promise that there will be a non`extern` use of that instantiation elsewhere in the program. There may be several `extern` declarations for a given instantiation but there must be exactly one definition for that instantiation.
+
+Because the compiler automatically instantiates a template when we use it, the `extern` declaration must appear before any code that uses that instantiation:
+```c++
+// Application.cc
+// these template types must be instantiated elsewhere in the program
+extern template class Blob<string>;
+extern template int compare(const int &,const int &);
+Blob<string> sa1,sa2; // instantiation will appear elsewhere
+// Blob<int> and its intializer_list constructor instantiated in this file
+Blob<int> a1={0,1,...,9};
+Blob<int> a2(a1);// copy constructor instantiated in this file
+int i=compare(a1[0],a2[0]);// instantiation will appear elsewhere
+```
+
+> 别的文件实例化类模板，或者函数模板。本文件直接使用(声明创建类对象，调用函数)。
+The file `Application.o` will contain instantiations for `Blob<int>`, along with the `initailizer_list` and copy constructors for that class. The `compare<int>` function and `Blob<string>` class will not be instantiated in that file. There must be exactly one defintions of these templates in some other other file in the program:
+```c++
+// templateBuild.cc
+// instantiation file must provide a (nonextern) definition for 
+// every type and function that other files declare as extern
+
+template int compare(const int &,const int &);
+template class Blob<string>;// instantiates all members of the class template
+```
+> 以上两个语句，是一种定义，即对模板（类模板、函数模板）的实例化，也就是说，生成相应的代码，用实参替换掉模板的形参。
+
+When the compiler sees an instantiation definition (as opposed to a declaration), it generates code. Thus, the file `templateBuild.o` will contain the definitions for `compare` instantiated with `int` and for the `Blob<string>` class. When we build the application, we must link `templateBuild.o` with the `Application.o` files.
+
+**Instantiation Definitions Instantiate All Members**
+
+An instantiation definition for a class template instantiates all the members of that template including inline member functions. When teh compiler sees an instantiation definition it cannot know which member functions the program uses. Hence, **unlike the way it handles ordinary class template instantiations, the compiler instantiates all the members of that class. Even if we do not use a member, that member will be instantiated.** Consequently, we can explicit instantiation only for types that can be used with all the members of that template.
+```c++
+template <typename T>
+class Blob{
+    //...
+};
+
+template class Blob<int>;// this is definition to instantiate the class template template<typename T> class Blob<T>;
+```
+Ordinary class template instantiations:
+```c++
+template <typename T>
+class Blob{/*...*/};
+Blob<int> obj;
+obj.fun();// here, instantiation of member function (template member function or all member function?)
+```
+## Efficiency and Flexibility
+
+利用模板特性，可以给予我们更多灵活性。比如标准库中的`shared_ptr`和`unique_ptr`
+- 前者共享指针所有权
+- 后者独占所有权
+
+这两者的差异之一是，允许用户重载默认deleter，比如override一个`shared_ptr`的deleter，只要在创建或`reset`指针时传递一个可调用的对象即可。另一方面，deleter是`unique_ptr`对象的一部分，用户必须在定义`unique_ptr`对象时以显示模板形参的方式提供deleter的类型。
+
+**Binding the Deleter at Run time**
+
+可以确定的是，`shared_ptr`并没有将deleter直接保存一个成员，因为deleter的类型直到运行时才被确定。实际上，我们可以随时改变`shared_ptr`对象的deleter。通常，类的成员的类型在运行时是不能改变的。因此，不能直接保存deleter。
+
+假定`shared_ptr`将它管理的指针保存在一个成员`p`中，同时deleter通过一个`del`的成员来访问`p`。则`shared_ptr`的析构函数必须包含
+```c++
+// value of del known only at run time; call through a pointer
+del?del(p):delete p; // del(p) requires run-time jump to del's location
+```
+由于deleter是间接保存的，调用`del(p)`需要一次run-time的跳转操作，转到`del`保存的地址来执行代码。
+
+**Binding at Compile Time**
+
+在`unique_ptr`中，deleter的类型是类类型的一部分，也就是说，`unique_ptr`有两个模板参数：
+- first，它管理的指针
+- second，deleter的类型
+因此，deleter类型作为`unique_ptr`的一部分在compile-time就确定，从而deleter直接保存在`unique_ptr`对象中。
+
+`unique_ptr`的析构函数，对其保存的`p`调用用户提供的deleter或执行`delete`。
+```c++
+// del bound at compile time;
+// direct call to the deleter that is instantiated 
+del(p);// no run-time overhead
+```
+`del`的类型可以是默认的deleter类型，也可以是用户提供的。
+
+
+
+
+
+
+
+
+
+
 
 
 
