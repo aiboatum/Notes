@@ -4,25 +4,30 @@ Let's recall the conception of swap operation.
 ```c++
 int a=3;
 int b=4;
-
 void swap(int &a,int &b){
     int t=a;
     // copy-initialization, not assignment.
     // It's worth realizing the difference between assignment and copy.
     // int t; t=a; // t is not initialized, and the second statement means t is assigned as a;
-
     a=b;
     b=t;
 }
-swap(a,b);
-
+swap(a,b);  
 ```
 
-It's easy to observe that there are two built-in assignment and one copy-initialization. 
+> swap涉及两次赋值操作，和一次拷贝初始化操作。
 
-> If a class defines its own `swap`, then the algorithm uses that **class-specific** version. Otherwise, it uses the `swap` function defined by the libarary. 
+## std::swap()
 
-Although, as usual, we don't known how `swap` is implemented, conceptually it's easy to see that swapping two objects involves a copy and two assignments. For example, code to swap two objects of our valuelike `HasPtr` class might look something like:
+我们看一下`std::swap()`的源码：
+```c++
+template<typename _Ty>
+void swap(_Ty &left,_Ty &right){
+    _Ty tmp=std::move(left);
+    left=std::move(right);
+    right=std::move(tmp);
+}
+```
 
 ```c++
 class HasPtr{
@@ -53,7 +58,7 @@ v1.ps=v2.ps;
 v2.ps=t;
 ```
 
-**Writing Our Own `swap` Function**
+## Writing Our Own `swap` Function**
 
 We can override the default behaviour of `swap` by defining a version of `swap` that operates on our class. The typical implementation of `swap` is:
 
@@ -63,15 +68,13 @@ class HasPtr{
     friend void swap(HasPtr &,HasPtr &);
 };
 inline void swap(HasPtr &lhs,HasPtr &rhs){
-    using std::swap;
-    swap(lhs.ps,rhs.ps);
+    using std::swap;        // 扩大swap的匹配范围，即如果类没有定义swap(string *left,string *right)
+                            // 版本时，会扩大匹配范围到std命名空间内匹配。
+    swap(lhs.ps,rhs.ps);    // 而不是std::swap(lhs.ps,rhs.ps)，虽然在本例中没有任何区别
     swap(lhs.val,rhs.val);
 }
 ```
-
-We start by declaring `swap` as a `friend` to give it access to `HasPtr`'s (private) data members. The body of `swap` calls `swap` on each of the data members of the given object.
-
-**`swap` Functions Should Call `swap`, Not `std::swap`**
+#### `swap` Functions Should Call `swap`, Not `std::swap`
 
 In the example mentioned above, the data members of `HasPtr` have built-in types, that is string and int. There is no type-specific version of `swap` for the built-in types. In this case, these calls will invoke the library `std::swap`.
 
@@ -102,7 +105,7 @@ void swap(Foo &lf,Foo &rf){
 
 If there is a type-specific version of `swap`, that version will be a better match than the one defined in `std`. As a result, if there is a type-specific version of `swap`, calls to `swap` will match that type-specific version. If there is no type-specific version, then- assuming there is a `using` declaration for `swap` in scope-calls to `swap` will use the version in `std`.
 
-**Using `swap` in Assignment Operators**
+## Using `swap` in Assignment Operators
 
 We can define the assignment operator by using `swap` defined in our classes. These opeartors use a technique known as **copy and swap**. This technique swaps the left-operand with a copy of the right-hand operand.
 

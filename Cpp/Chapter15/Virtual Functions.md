@@ -2,7 +2,17 @@
 
 C++通过virtual functions，从而使用dynamic binding实现多态性。In C++ dynamic binding happens when a virtual member function is called through a reference or a pointer to a base-class type.
 
-如果不使用虚函数的话，则使用基类引用或者指针，调用相应的函数，则会被限制在基类函数本身，从而无法调用子类中被重写过的函数。
+1. **纯虚函数**才是不被实现的函数（只定义接口，起到该接口的规范作用，具体实现细节由各派生类决定，只要符合该规范即可）
+2. **虚函数**中的`virtual`体现在“动态联编”或“动态绑定（延迟绑定）”上，一个类函数的调用不是在编译时刻决定的（普通函数，会直接在链接阶段，将函数地址链接到各个调用该函数的位置），虚函数则不能在编译时刻决定，如
+    ```c++
+    Base *a=new Derived(); // 指向基类的指针被绑定到派生类对象上，这个只有运行时才能决定
+    a->func();  // 运行时，将Derived类中的override的virtual function，即func()的地址链接到调用位置
+    ```
+3. 
+
+> 一个和虚函数动态绑定的概念为**虚函数表**，可以帮助理解关于虚函数是如何实现动态绑定的。
+
+**如果不使用虚函数的话，则使用基类引用或者指针，调用相应的函数，则会被限制在基类函数本身，从而无法调用子类中被重写过的函数**。
 ```c++
 class Base {
 public:
@@ -31,10 +41,14 @@ Base foo()
 Base foo()
 ```
 
-Because we don't know which version of a function is called until run time, virtual function must be always be defined. (任何情况下，虚函数必须要定义). Ordinarily, if we do not use a function, we don't need to supply a definition for that function. However, we must define every virtual function, regardless of whether it is used, because the compiler has no way to determine whether a virtual function is used.
+#### 任何情况下，虚函数必须定义
 
-> Key concept: conversions among types related by inheritance
-> - the conversion from derived to base applies only to pointer or reference types.
+一般来说，如果一个函数被声明，但是我们不使用它，那么它是可以不定义的。但是，虚函数的动态绑定特性决定了，编译器直到运行时才知道一个虚函数是否被使用（因为无法在运行时前基类的还是派生类的虚函数将会被调用），因此每个虚函数都要被定义。
+
+#### 基类和派生类的转换规则
+1. 派生类到基类的转换只有通过指针或引用类型（引用实质也是一种指针，`*const`类型指针）相关的处理才会发生，如通过指针或引用调用虚函数`void fun(const Base &b)`。
+    - 原因稍后再写
+2. 基类到派生类的转换不可以是隐式的
 > - there is no implicit conversion from the base-class type to the derived type.(显示拷贝构造或赋值，移动拷贝或移动赋值都可以)
 其中，如果不是引用和指针，
 ```c++
