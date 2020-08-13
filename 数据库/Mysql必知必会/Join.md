@@ -1,8 +1,28 @@
-# 联结表
+<a id="markdown-1-联结表" name="1-联结表"></a>
+# 1. 联结表
+<!-- TOC -->
 
-## 什么是联结？
+- [1. 联结表](#1-联结表)
+    - [1.1. 什么是联结？](#11-什么是联结)
+        - [1.1.1. 为什么使用联结？](#111-为什么使用联结)
+        - [1.1.2. 创建联结](#112-创建联结)
+        - [1.1.3. 自联结 self join](#113-自联结-self-join)
+        - [1.1.4. 内部联结 inner join](#114-内部联结-inner-join)
+        - [1.1.5. 自然连接 natural join](#115-自然连接-natural-join)
+        - [1.1.6. join多个表](#116-join多个表)
+- [2. 高级join](#2-高级join)
+    - [2.1. 使用表别名](#21-使用表别名)
+    - [2.2. 自联结 self-join](#22-自联结-self-join)
+    - [2.3. 自然join](#23-自然join)
+    - [2.4. 外部join](#24-外部join)
+        - [2.4.1. full outer join](#241-full-outer-join)
+    - [2.5. 使用带聚集函数的join](#25-使用带聚集函数的join)
 
-联结（join）是利用SQL中的select语句的一个重要操作。关系数据库中的表中包含各类**关系**，各个表之间通过**外键**相互关联。
+<!-- /TOC -->
+<a id="markdown-11-什么是联结" name="11-什么是联结"></a>
+## 1.1. 什么是联结？
+
+联结（join）是利用 SQL 中的 `select` 语句的一个重要操作。关系数据库中的表中包含各类**关系**，各个表之间通过**外键**相互关联。
 
 每个表都有一个**主键**，该主键可以被其他表用来作外键。
 
@@ -11,61 +31,135 @@
 这样，可以看出关系数据库的优点：
 - 可伸缩性好：能适应不断增加的工作量。
 
-### 为什么使用联结？
+<a id="markdown-111-为什么使用联结" name="111-为什么使用联结"></a>
+### 1.1.1. 为什么使用联结？
 
 将数据分散成多个表有方便之处，如可伸缩性好。但是也有些许不好之处。
 
-数据存储在多个表中，检索的语句要稍微麻烦一点。使用联结机制，在一条select语句中关联表。联结在运行时关联表中的正确的行。
+数据存储在多个表中，检索的语句要稍微麻烦一点。使用联结机制，在一条 `select` 语句中关联表。联结在运行时关联表中的正确的行。
 
-> 维护引用完整性： 使用关系表时，如果products表中插入非法的供应商ID（即没有在vendors表中出现）的供应商产品，则这些产品是不可访问的，因为它们没有关联到某个供应商。
+> 维护引用完整性： 使用关系表时，如果 `products` 表中插入非法的供应商 ID（即没有在 `vendors` 表中出现的 ID）的供应商产品，则这些产品是不可访问的，因为它们没有关联到某个供应商。
 
-> 为了防止这种情况发生，可指示MySQL只允许在products表中供应商ID字段出现合法值（即vendors中含有的ID）。这就是维护引用完整性。这通过在表中定义中指定主键和外键来实现。
+> 为了防止这种情况发生，可指示 MySQL 只允许在 `products` 表中供应商 ID 字段出现合法值（即 `vendors` 中含有的 ID）。这就是维护引用完整性。这通过在表中定义中指定主键和外键来实现。
 
-### 创建联结
+<a id="markdown-112-创建联结" name="112-创建联结"></a>
+### 1.1.2. 创建联结
 
 ```sql
 select vend_name,prod_name,prod_price from vendors,products
 where vendors.vend_id=products.vend_id
 order by vend_name,prod_name;   -- 优先以vend_name排序，vend_name相同以prod_name排序
 ```
-select 语句查询到不是一个表中的字段，from子句跟着两个表，where子句指示MySQL匹配两个表中的vend_id。该SQL语句先建立联结，然后返回这两个表中对应的字段。（可以理解为将两个表合为一个虚拟的表，这个表按照vend_id一一对应起来）
+`select` 语句查询的不是一个表中的字段，`from` 子句跟着两个表，`where` 子句指示 MySQL 匹配两个表中的 `vend_id`。该 SQL 语句先建立联结，然后返回这两个表中对应的字段。（可以理解为将两个表合为一个虚拟的表，这个表按照 `vend_id` 一一对应起来）
 
-在select语句联结几个表时，相应的关系是在运行时构造的。数据库表的定义中不存在能指示MySQL如何对表进行联结的东西。在两个联结时，第一个表中的每一行都会与第二个表中的每一行配对。where子句是过滤条件，它只包含给定条件的行。如果没有where的过滤条件，第一个表中的每一个行都会与第二个表中的每一个行进行配对，而不管它们逻辑上是否可以在一起。如，
+在 `select` 语句联结几个表时，相应的关系是在运行时构造的。数据库表的定义中不存在能指示 MySQL 如何对表进行联结的东西。在两个联结时，第一个表中的每一行都会与第二个表中的每一行配对。`where` 子句是过滤条件，它只包含给定条件的行。如果没有 `where` 的过滤条件，第一个表中的每一个行都会与第二个表中的每一个行进行配对，而不管它们逻辑上是否可以在一起。如，
 ```sql
 select vend_name,prod_name,prod_price from vendors,products
 order by vend_name,prod_name; 
 ```
-没有联结条件（where的过滤条件）返回的结果为**笛卡儿积**的结果。检索的数目将是第一个表中的行数乘以第二个表中的行数。
+没有联结条件（`where`的过滤条件）返回的结果为**笛卡儿积**的结果。检索的数目将是第一个表中的行数乘以第二个表中的行数。
 
-介绍各类join前，先介绍一下笛卡尔积结果。现在有两个表：
-|id|name|
-|-|-|
-|1|jack|
-|2|tony|
-|3|pony|
-另一个表：
-|id|address|
-|-|-|
-|1|NY|
-|2|DT|
-|3|LD|
-使用`select * from table1,table2`产生笛卡尔积结果：
-|id|name|id|address|
-|-|-|-|-|
-|1|jack|1|NY|
-|2|tony|1|NY|
-|3|pony|1|NY|
-|1|jack|2|DT|
-|...|...|...|...|
-以下介绍的各类join，inner join,outer join, left outer join, right outer join等都是从笛卡尔积中选取满足join条件的记录（行）。
+介绍各类 `join` 前，先介绍一下『笛卡尔积』的结果。现在有两个表：
 
-### 内部联结
+SQL Schema:
+~~~sql
+create table if not exists table1(
+    id int not null primary key,
+    name varchar(255) 
+ );
+ create table if not exists table2(
+    id int not null primary key,
+    addr varchar(255),
+    email varchar(30)
+ );
 
-内部join又称为等值join。用`inner join`指定表的join关系，`on`指明联结条件。如果不加联结条件，检索结果为笛卡尔积结果。加上`on`的join条件，但是会有重复行。如下：
+insert into table1 values(1,'Jack'),(2,'Tony'),(3,'Pony');
+insert into table2 values(1,'LA','123@QQ.COM'),(2,'NY','345@QQ.COM');
+~~~
+
+| id | name |
+|:--:|:----:|
+|  1 | jack |
+|  2 | tony |
+|  3 | pony |
+
+| addr |    email   |
+|:----:|:----------:|
+|  LA  | 123@qq.com |
+|  NY  | 345@qq.com |
+
+
+使用 `select * from table1,table2` 产生『笛卡尔积』结果：
+
+| id | name | addr |    email   |
+|:--:|:----:|:----:|:----------:|
+|  1 | Jack |  LA  | 123@QQ.COM |
+|  1 | Jack |  NY  | 345@QQ.COM |
+|  2 | Tony |  LA  | 123@QQ.COM |
+|  2 | Tony |  NY  | 345@QQ.COM |
+|  3 | Pony |  LA  | 123@QQ.COM |
+|  3 | Pony |  NY  | 345@QQ.COM |
+
+
+以下介绍的各类 `join`，`inner join`，`outer join`，`left outer join`，`right outer join` 等都是从笛卡尔积中选取满足 `join` 条件的记录（行）。
+
+<a id="markdown-113-自联结-self-join" name="113-自联结-self-join"></a>
+### 1.1.3. 自联结 self join
+
+SQL Schema 如下:
 ```sql
-select *from table1,table2 where table1.id=table2.id;
+create table if not exists customer(
+    id int not null auto_increment primary key,
+    company varchar(255) null,
+    name varchar(20)
+) engine=innodb;
+
+insert into customer(company,name) values('Fun4All','Tom');
+insert into customer(company,name) values('Baidu','Jerry');
+insert into customer(company,name) values('Google','Herry');
+insert into customer(company,name) values('Tencent','MahuaTeng');
+insert into customer(company,name) values('Fun4All','Bill');
+```
+该模式下，创建的关系（表）如下，
+
+| id | company |    name   |
+|:--:|:-------:|:---------:|
+|  1 | Fun4All |    Tom    |
+|  2 |  Baidu  |   Jerry   |
+|  3 |  Google |   Herry   |
+|  4 | Tencent | MahuaTeng |
+|  5 | Fun4All |    Bill   |
+
+
+**self join** 就是表自己和自己 join，一般用来代替如下的子查询：
+~~~sql
+select * from customer 
+where company in (select company from customer where name ='Tom');
+~~~
+
+相应的 `self join` 如下，
+
+```sql
+select * from customer c1, customer c2
+where c1.company=c2.company and c1.name='Tom';
+```
+得到如下检索结果：
+
+| id | company | name | id | company | name |
+|:--:|:-------:|:----:|:--:|:-------:|:----:|
+|  1 | Fun4All |  Tom |  1 | Fun4All |  Tom |
+|  1 | Fun4All |  Tom |  5 | Fun4All | Bill |
+
+
+<a id="markdown-114-内部联结-inner-join" name="114-内部联结-inner-join"></a>
+### 1.1.4. 内部联结 inner join
+
+内部 `join` 又称为『等值』`join`。用 `inner join` 指定表的 `join` 关系，`on` 指明联结条件。如果不加联结条件，检索结果为笛卡尔积结果。加上 `on` 的 `join` 条件，但是会有重复行。如下：
+```sql
+select * from table1,table2 where table1.id=table2.id;
 ```
 检索结果如下：
+
 |id|name|id|address|
 |-|-|-|-|
 |1|jack|1|NY|
@@ -73,40 +167,49 @@ select *from table1,table2 where table1.id=table2.id;
 |3|pony|3|LD|
 
 
-之前的两个表中的相等测试`where table1.cust_id=table2.cust_id`，这种称为内部联结。其实，对于这种联结可以使用稍微不同的语法来明确指定join的类型。如
+以上的两个表中的相等测试 `where table1.cust_id=table2.cust_id`，这种称为内部联结。其实，对于这种联结可以使用稍微不同的语法来明确指定 `join` 的类型。如
 ```sql
 select vend_name,prod_name,prod_price 
 from vendors INNER JOIN products 
 ON vendors.vend_id=products.vend_id;
 ```
-此时，from子句中指示两个的join关系，以inner join的方式。同时，使用on子句而不是where子句。
+此时，`from` 子句中指示两个的 `join` 关系，以 `inner join` 的方式。同时，使用 `on` 子句而不是 `where` 子句。
 
-### 自然连接（natural join）
+<a id="markdown-115-自然连接-natural-join" name="115-自然连接-natural-join"></a>
+### 1.1.5. 自然连接 natural join
 
-自然连接就是两个符合直觉思维的一种连接。比如
-|id|name|
-|-|-|
-|1|jack|
-|2|tony|
-|3|pony|
-和
-|id|addr|email|
-|-|-|-|
-|1|LA|123@qq.com|
-|2|NY|...|
-使用`select * from table1 natural join table2;`,检索结果如下：
-|id|name|addr|email|
-|-|-|-|-|
-|1|jack|LA|123@qq.com|
-|2|tony|NY|...|
-可以看出，table1中的第三行并没有没join。两个表如果没有相同记录的字段，则检索结果为空。例如，table2中的id分别为4，5时，自然join的结果为空。同时可以看出了自然join和inner join其实非常类似，都是基于等值测试。区别就是inner join的等值测试需要显示指出，并且natual join自动重叠相同的列。
+无论何时对表进行 join，应该至少有一个列出现在不止一个表中（被联结的列）。标准的 join 返回所有数据，相同的列多次出现。**自然联结**可以使得每个列返回一次。
 
-自然join基于等值，如果R和S具有相同的属性组Y，则自然join可以记为，
+使用 `select * from customer as a natural join customer as b;` 检索结果如下：
+
+| id | company |    name   |
+|:--:|:-------:|:---------:|
+|  1 | Fun4All |    Tom    |
+|  2 |  Baidu  |   Jerry   |
+|  3 |  Google |   Herry   |
+|  4 | Tencent | MahuaTeng |
+|  5 | Fun4All |    Bill   |
+
+使用 `select * from table1 natural join table2;` 则检索结果如下：
+
+| id | name | addr |    email   |
+|:--:|:----:|:----:|:----------:|
+|  1 | Jack |  LA  | 123@QQ.COM |
+|  2 | Tony |  NY  | 345@QQ.COM |
+
+可以看出，`table1` 中的第三行并没有没 join。两个表如果没有相同记录的字段，则检索结果为空。例如，`table2` 中的 `id` 分别为 `4，5` 时，`natural join` 的结果为空。同时可以看出了 `natural join` 和 `inner join` 其实非常类似，都是基于『等值测试』。区别就是 `inner join` 的等值测试需要显示指出，并且 `natual join` 自动重叠相同的列。
+
+自然 join 基于等值，如果 R 和 S 具有相同的属性组 Y，则自然 join 可以记为，
 ```
 R*S={tr∩ts|tr∈R ^ ts∈S ^ tr[Y]=ts[Y]}
 ```
 
-### join多个表
+> ***数据库通过自己的判断*** 并使用表内所有的相同字段作为 join 的联结条件完成联结过程，不需要指定联结条件。一般的写法是第一个表用 `*` 指定字段，其他的表用明确的表字段指定。:exclamation: 最好不要让数据库自动完成联结
+
+:excalmation: 注意:我们迄今为止建立的每个内联结都是自然联结，很可能永远都不会用到不是自然联结的内联结。因此，无需使用自然 join
+
+<a id="markdown-116-join多个表" name="116-join多个表"></a>
+### 1.1.6. join多个表
 
 语法如下，
 ```sql
@@ -137,9 +240,11 @@ join表的用法，join三个表，然后通过where的三个过滤条件，返�
 
 --- 
 
-# 高级join
+<a id="markdown-2-高级join" name="2-高级join"></a>
+# 2. 高级join
 
-## 使用表别名
+<a id="markdown-21-使用表别名" name="21-使用表别名"></a>
+## 2.1. 使用表别名
 
 sql可以给字段和计算字段起别名（导出字段）。同样可以给表起别名。
 ```sql
@@ -150,7 +255,8 @@ and oi.order_num=o.order_num
 and prod_id='TNT2'; 
 ```
 
-## 自联结 self-join
+<a id="markdown-22-自联结-self-join" name="22-自联结-self-join"></a>
+## 2.2. 自联结 self-join
 自联结也是一种inner join。
 
 ```sql
@@ -169,7 +275,8 @@ and p2.prod_id='DTNTR'; -- 不可以为p1.prod_id='DTNTR';
 可以借着self-join给出几个注意：
 - self-join的两个表是完全相同的，因此上面的select语句一定要使用完全限定用法，显示指明返回哪个表的哪个字段。不是self-join联结的多个表也有这种歧义可能，将多个表join成一个大表，最好使用完全限定用法。这也就是下面介绍的自然join。
 
-## 自然join
+<a id="markdown-23-自然join" name="23-自然join"></a>
+## 2.3. 自然join
 
 进行join的时候，会返回所有数据，这些字段中会有重复的。**自然联结**可以排除多次出现的情况，使得每个字段只返回一次。
 
@@ -184,7 +291,8 @@ and prod_id='FB';
 ```
 通配符只对第一个表使用，其他字段显示指出（因为两个表有重复字段）。事实上，几乎用到的都是自然join。因此，MySQL中希望将natural join的工作交给用户完成。
 
-## 外部join
+<a id="markdown-24-外部join" name="24-外部join"></a>
+## 2.4. 外部join
 
 外部join将inner join的没有关联的记录也会显示出来。如有
 |id|name|
@@ -216,7 +324,8 @@ inner join(给定join条件`table1.id=table2.id`的前提)只会返回：
 
 > left,right outer join 不可以忽略on联结条件。
 
-### full outer join
+<a id="markdown-241-full-outer-join" name="241-full-outer-join"></a>
+### 2.4.1. full outer join
 
 full outer join或full join，是左右join的结合版本。
 
@@ -237,7 +346,8 @@ select *from table2 right outer join table1 on table1.id=table2.id;
 
 ---
 
-## 使用带聚集函数的join
+<a id="markdown-25-使用带聚集函数的join" name="25-使用带聚集函数的join"></a>
+## 2.5. 使用带聚集函数的join
 
 aggregate function用来汇总数据，当然可以汇总多个表的数据。即联合join一起使用即可。
 ```sql
