@@ -22,11 +22,11 @@
 <a id="markdown-11-什么是联结" name="11-什么是联结"></a>
 ## 1.1. 什么是联结？
 
-联结（join）是利用 SQL 中的 `select` 语句的一个重要操作。关系数据库中的表中包含各类**关系**，各个表之间通过**外键**相互关联。
+联结（join）是利用 SQL 中的 `select` 语句的一个重要操作。关系数据库中的表中包含各类**关系**，各个表之间通过**外键**相互关联。这些『外键』就是关系（表）之间相互 join 的基础（当然，两个没有外键关联的表也可以关联，只是没有实际意义罢了）。
 
 每个表都有一个**主键**，该主键可以被其他表用来作外键。
 
-> 外键：外键是某个表中的某些字段，包含其他表中的主键，定义了表之间的关系。
+> 外键：外键是某个表中的某些字段，包含其他表中的主键，定义了表之间的关系。具体见 [关系数据库.md](./数据库原理/关系数据库.md)
 
 这样，可以看出关系数据库的优点：
 - 可伸缩性好：能适应不断增加的工作量。
@@ -34,19 +34,15 @@
 <a id="markdown-111-为什么使用联结" name="111-为什么使用联结"></a>
 ### 1.1.1. 为什么使用联结？
 
-将数据分散成多个表有方便之处，如可伸缩性好。但是也有些许不好之处。
+将数据分散成多个表有方便之处，如可伸缩性好。但是也有些许不好之处。数据存储在多个表中，检索的语句要稍微麻烦一点。使用联结机制，在一条 `select` 语句中关联表。联结在『运行时』关联表中的正确的行。
 
-数据存储在多个表中，检索的语句要稍微麻烦一点。使用联结机制，在一条 `select` 语句中关联表。联结在运行时关联表中的正确的行。
-
-> 维护引用完整性： 使用关系表时，如果 `products` 表中插入非法的供应商 ID（即没有在 `vendors` 表中出现的 ID）的供应商产品，则这些产品是不可访问的，因为它们没有关联到某个供应商。
-
-> 为了防止这种情况发生，可指示 MySQL 只允许在 `products` 表中供应商 ID 字段出现合法值（即 `vendors` 中含有的 ID）。这就是维护引用完整性。这通过在表中定义中指定主键和外键来实现。
+> 维护引用完整性： 使用关系表时，比如 `products` 表中插入非法的供应商 ID（即没有在 `vendors` 表中出现的 ID）的供应商产品，则这些产品是不可访问的，因为它们没有关联到某个供应商。为了防止这种情况发生，可指示 MySQL 只允许在 `products` 表中供应商 ID 字段出现合法值（即 `vendors` 中含有的 ID）。这就是维护引用完整性。这通过在表中定义中指定主键和外键来实现。
 
 <a id="markdown-112-创建联结" name="112-创建联结"></a>
 ### 1.1.2. 创建联结
 
 ```sql
-select vend_name,prod_name,prod_price from vendors,products
+select vend_name,prod_name,prod_price from vendors,products -- 后面看到这就是 联结
 where vendors.vend_id=products.vend_id
 order by vend_name,prod_name;   -- 优先以vend_name排序，vend_name相同以prod_name排序
 ```
@@ -101,7 +97,7 @@ insert into table2 values(1,'LA','123@QQ.COM'),(2,'NY','345@QQ.COM');
 |  3 | Pony |  NY  | 345@QQ.COM |
 
 
-以下介绍的各类 `join`，`inner join`，`outer join`，`left outer join`，`right outer join` 等都是从笛卡尔积中选取满足 `join` 条件的记录（行）。
+以下介绍的各类 `join`，`inner join`，`outer join`，`left outer join`，`right outer join` 等都是从『笛卡儿积』中选取满足 `join` 条件的记录（行）。
 
 <a id="markdown-113-自联结-self-join" name="113-自联结-self-join"></a>
 ### 1.1.3. 自联结 self join
@@ -283,7 +279,7 @@ and prod_id='TNT2';
 
 区别具体如下：
 
-1. `left outer join` 以『右表』为基准，左表的行一定会列出，右表如果没有匹配的行，就为 NULL。如果右表有多行和左表匹配，那么左表相同的行会出现多次。
+1. `left outer join` 以『左表』为基准，左表的行一定会列出，右表如果没有匹配的行，就为 NULL。如果右表有多行和左表匹配，那么左表相同的行会出现多次。
 
 2. `right outer join` 与 1 相反
 
