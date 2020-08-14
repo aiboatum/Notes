@@ -4,7 +4,7 @@
 
 ## 参数传递会忽略顶层 `const`
 
-> 顶层 `const` 和 底层 `const` 见 [const.md](const.md)
+> 顶层 `const` 和 底层 `const` 见 [const.md](Const.md)
 
 1. 形参是非引用或非指针类型
 ```c++
