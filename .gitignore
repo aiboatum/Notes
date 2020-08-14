@@ -1,8 +1,8 @@
 /.vscode
 *.exe
 *.txt
-tmp.c
-tmp.cpp
-tmp.py
-tmp.md
+/tmp.c
+/tmp.cpp
+/tmp.py
+/tmp.md
 *.pdf
