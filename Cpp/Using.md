@@ -1,8 +1,10 @@
-# Using is one of type alias.
-- syntax
+# Using 
+
+syntax on `using`:
 ```c++
 using indentifier attr(optiaonal)=type-id;
 ```
+
 **explanation of using**
 ```c++
 #include <iostream>
