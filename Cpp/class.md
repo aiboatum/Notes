@@ -1,9 +1,13 @@
 #  Class
-- *Class(keywords class and keywords sturct)*.
+
+
+- Class(keywords class and keywords sturct)
+
 > The only difference between using class and using struct to define a class is the default access level.
   - **Functions defined in the class are inline implicitly**
 
-## Introduce $this$ pointer
+## Introduce this pointer
+
 ```c++
 std::string isbn() const {return bookNO;}
 
@@ -19,13 +23,13 @@ Sales_data::isbn(&total);
 // 'this' pointer points to this object, 
 // that is taking the address of this object.
 ```
----
+
 
 # Introduce const Menber functions
 ```c++
 std::string isbn() const{return bookNO};
 ```
-what's the purpose of the const?
+what's the purpose of the `const`?
   1. In c++, the `this` pointer is a const pointer. And `this` pointer points to the `nonconst` version of the class type. Hence, `this` pointer cannot point to a `const` object, that is, we connot bind `this` to a `const` object.
   2. The purpose of that `const` is to modify the type of the the implicit `this` pointer, hence we can call this member function on a `const` object. The type of `this` will be `const Sales_data * const.`
   4. A `const` following the parameter list indicates that `this` is a pointer to `const`.
@@ -57,9 +61,12 @@ Sales_data s2();
 s1.combine(s2);// return s1
 s2.conbine(s1);// return s2
 ```
----
-- **defining nonmember class-related functions**
-  - ***Ordinarily, nonmember functions that are part of the interface of a class should be declared in the same header as the class itself.***
+
+
+
+## defining nonmember class-related functions
+
+Ordinarily, nonmember functions that are part of the interface of a class should be declared in the same header as the class itself.
 
 An simple example is given here.
 ```c++
@@ -69,8 +76,9 @@ Sales_data add(const Sales_data &a,const Sales_data &b){
 }
 ```
 
----
-- **demo**
+
+### demo
+
 ```c++
 class A{
     public:
@@ -115,111 +123,133 @@ int main(){
     return 0;
 }
 ```
----
-- **constructors**
-    1. `constructors is a special member functions to initialize the data menbers of a class object`
-    2. `constructors can be defined as more than one form, that is, a class can have multiple constructors to initialize objects differently. these different constructors can be viewed as overload functions`
-    3. `constructor will be excuted when an object of a class type is created`
-    4. `constructor has no return type`
-- **constructor initializer list**
-    ```c++
-    Sales_data(const std::string &s):bookNo(s){}
-    Sales_data(const std::string &s,unsigned n,double p)
-        :bookNo(s),units_sold(n),revenue(p*n){}
-    ```
-- ***When a member is omitted from the constructor initializer list,it is implicitly initialized using the same process as is used by the synthesized default constructor***
-    ```c++
-    //like this:
-    Sales_data(const std::string &s):
-        bookNo(s),units_sold(0),revenue(0){}
-    
-    Sales_data():
-        bookNo(""),units_sold(0),revenue(0){}
 
-    //demo:
-    #include <string>
+## constructors
+
+1. constructors is a special member functions to **initialize** the data menbers of a class object
+
+2. constructors can be defined as more than one form, that is, a class can have multiple constructors to initialize objects differently. these different constructors can be viewed as **overload functions**
+
+3. constructor will be excuted when an object of a class type is created
+   
+4. constructor has no return type
+
+
+### constructor initializer list
+
+
+```c++
+Sales_data(const std::string &s):bookNo(s){}
+Sales_data(const std::string &s,unsigned n,double p)
+    :bookNo(s),units_sold(n),revenue(p*n){}
+```
+
+When a member is omitted from the constructor initializer list,it is implicitly initialized using the same process as is used by the synthesized default constructor.
+
+```c++
+//like this:
+Sales_data(const std::string &s):
+    bookNo(s),units_sold(0),revenue(0){}
+
+Sales_data():
+    bookNo(""),units_sold(0),revenue(0){}
+
+//demo:
+#include <string>
+#include <iostream>
+class myclass{
+public:
+    int a;
+    int b;
+    std::string s;
+public:
+    //constructor
+    myclass():a(2),b(3),s("2+3"){}
+    myclass(int a,int b):a(a),b(b),s(""){}
+};
+int main()
+{
+myclass m1=myclass();
+// output 2 3 2+3
+std::cout<<m1.a<<" "<<m1.b<<" "<<m1.s<<std::endl;
+}
+```    
+
+
+## friends
+
+1. A class can allow another class or function to access its nonpublic members by making that class or function a friend.
+   
+2. friend declarations for nonmember functions should be added to the body of class
+   
+3. friends declarations may appear only inside a class definition, they can appear anywhere in the class.
+
+4. friends are not members of the class
+   
+5. friends are not affected by the access control of the public or private
+   
+6. firend declaration only specifies access
+   
+7. **firend functions or class cannot directly access the nonpublic members, which can be accessed by object (in which declares friends functions or class)**
+   
+### demo
+```c++
+class A{
+    private:
+        int a;
+    public:
+        A()=default;
+        friend void foo();// just indicate that the function foo is a friend to Class A
+        friend void bar();
+};
+//outside the class should have the declaration of functions
+void foo();
+int main(){
+    foo();//ok
+    bar();//error
+}
+```
+
+1. `the definition of friends can be inside or outside body of a class`
+   
+    ```c++
     #include <iostream>
-    class myclass{
+    #include <string>
+    #include <vector>
+    class A {
+    private:
+        int a = 123;
     public:
-        int a;
-        int b;
-        std::string s;
-    public:
-        //constructor
-        myclass():a(2),b(3),s("2+3"){}
-        myclass(int a,int b):a(a),b(b),s(""){}
+        A() = default;
+        A(int a) :a(a) {}
+        void bar() {
+        std::cout << a.a;// ok, private variable can be accessed by its member functions inside the class.
+        }
+        friend void foo(A &a) {
+            // ok, foo() is a friend function, and is thereby able to access its unpublic member of class A.
+            std::cout << a.a;
+            // this function can also be defined outside the class.
+        }
     };
+    void foo(); // there must exists this declaration ouside class. otherwise, the call to foo() will be failed.
     int main()
-    {
-    myclass m1=myclass();
-    // output 2 3 2+3
-    std::cout<<m1.a<<" "<<m1.b<<" "<<m1.s<<std::endl;
-    }
-    ```    
----
-- **friends**
-  1. `A class can allow another class or function to access its nonpublic members by making that class or function a friend.`
-  2. `friend declarations for nonmember functions should be added to the body of class` 
-  3. `friends declarations may appear only inside a class definition, they can appear anywhere in the class.`
-  4. `friends are not members of the class`
-  5. `friends are not affected by the access control of the public or private`
-  6. `firend declaration only specifies access`
-  7. `firend functions or class cannot directly access the nonpublic members, which can be accessed by object (in which declares friends functions or class)`
-- *demo*
-    ```c++
-    class A{
-        private:
-            int a;
-        public:
-            A()=default;
-            friend void foo();// just indicate that the function foo is a friend to Class A
-            friend void bar();
-    };
-    //outside the class should have the declaration of functions
-    void foo();
-    int main(){
-        foo();//ok
-        bar();//error
-    }
-    ```
-    8. `the definition of friends can be inside or outside body of a class`
-        ```c++
-        #include <iostream>
-        #include <string>
-        #include <vector>
-        class A {
-        private:
-            int a = 123;
-        public:
-            A() = default;
-            A(int a) :a(a) {}
-            void bar() {
-                std::cout << a.a;// ok, private variable can be accessed by its member functions inside the class.
-            }
-            friend void foo(A &a) {
-                // ok, foo() is a friend function, and is thereby able to access its unpublic member of class A.
-                std::cout << a.a;
-                // this function can also be defined outside the class.
-            }
-        };
-        void foo(); // there must exists this declaration ouside class. otherwise, the call to foo() will be failed.
-        int main()
-        {	foo();
-            bar();
-        }  
-        ```
-> remark:the friend function or class can access the non-public members of class, which means that the private members of class can be accessed through the object of the class. Objects of a class can generally only access non-public objects through member functions of the class.
+    {	foo();
+        bar();
+    }  
 
----
-- **Class declarations**
-    1. `class A;// this is a declaration of the A class, but not initialized. The type A is an incomplete type, that is, we do not know the members that A contians. Moreover, it is better to not make such declarations.`
-    ```c++
-    //  we can define pointers or reference to such type (incomplete type), 
-    //  thus we can declare (but not define) functions that use an imcomplete type as a parameter or return type. Which seems to relative to C.
-    struct List{
-        int a;
-        struct List *pre;   //ok
-        struct List next;   //error
-    };
-    ```
-    2. `class A can be data members of class B only if the B has been defined (not only declaration), which means that the clas A is a complete type and  the complier knows the storage that the A needs.`
+> remark: the friend function or class can access the non-public members of class, which means that the private members of class can be accessed through the object of the class. Objects of a class can generally only access non-public objects through member functions of the class.
+
+
+## Class declarations
+
+1. class A;// this is a declaration of the A class, but not initialized. The type A is an incomplete type, that is, we do not know the members that A contians. Moreover, it is better to not make such declarations.
+```c++
+//  we can define pointers or reference to such type (incomplete type), 
+//  thus we can declare (but not define) functions that use an imcomplete type as a parameter or return type. Which seems to relative to C.
+struct List{
+    int a;
+    struct List *pre;   //ok
+    struct List next;   //error
+};
+```
+class A can be data members of class B only if the B has been defined (not only declaration), which means that the clas A is a complete type and  the complier knows the storage that the A needs.
