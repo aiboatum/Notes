@@ -27,7 +27,7 @@ void foo(int *a);
 - 第二个 `int *a`，很显然不可以指向一个 `const int` 对象
 因此，这是两个可以在匹配过程可以区分的两个函数。
 
-3. 形参是引用类型
+1. 形参是引用类型
 ```c++
 void foo(const int &a); // 这里的 const 是底层 const，顶层 const隐含在引用中，
                         // 即引用可以看成一个指针常量
