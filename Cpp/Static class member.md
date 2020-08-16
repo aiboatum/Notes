@@ -1,7 +1,10 @@
-#   static class members
+#  static class members
+
+
 static class members are associated with the class, rather than with individual objects of the class type. Which means that all objects of the same class hold the static object commonly. The static objects will be stored only once, and be not destoryed until the program terminates.
 
-**declaring static members and using a class static member**
+## declaring static members and using a class static member
+
 ```c++
 class myclass{
     private:
@@ -19,6 +22,7 @@ int main(){
     m1.show_nonstatic();//ok
 }
 ```
+
 **Note:**
 static class member cannot call the nonstatic class member directly.
 ```c++
@@ -48,4 +52,5 @@ void myclass::show_static(){
     //...
 }
 ```
-***Because static data members are not part of individual objects of the class type, they are not defined when we create objects of the class. Thus, they are not initialized by the class constructors.***
+
+Because static data members are not part of individual objects of the class type, they are not defined when we create objects of the class. Thus, they are not initialized by the class constructors.

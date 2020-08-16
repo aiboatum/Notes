@@ -1,25 +1,23 @@
-<a id="markdown-1-联结表" name="1-联结表"></a>
 # 1. 联结表
 <!-- TOC -->
 
 - [1. 联结表](#1-联结表)
-    - [1.1. 什么是联结？](#11-什么是联结)
-        - [1.1.1. 为什么使用联结？](#111-为什么使用联结)
-        - [1.1.2. 创建联结](#112-创建联结)
-        - [1.1.3. 自联结 self join](#113-自联结-self-join)
-        - [1.1.4. 内部联结 inner join](#114-内部联结-inner-join)
-        - [1.1.5. 自然连接 natural join](#115-自然连接-natural-join)
-        - [1.1.6. join 多个表](#116-join-多个表)
+  - [1.1. 什么是联结？](#11-什么是联结)
+    - [1.1.1. 为什么使用联结？](#111-为什么使用联结)
+    - [1.1.2. 创建联结](#112-创建联结)
+    - [1.1.3. 自联结 self join](#113-自联结-self-join)
+    - [1.1.4. 内部联结 inner join](#114-内部联结-inner-join)
+    - [1.1.5. 自然连接 natural join](#115-自然连接-natural-join)
+    - [1.1.6. join 多个表](#116-join-多个表)
 - [2. 高级 join](#2-高级-join)
-    - [2.1. 使用表别名](#21-使用表别名)
-    - [2.2. 外部联结 outer join](#22-外部联结-outer-join)
-        - [2.2.1. left outer join 和 right outer join](#221-left-outer-join-和-right-outer-join)
-        - [2.2.2. full outer join](#222-full-outer-join)
-    - [2.3. 使用带聚集函数的 join](#23-使用带聚集函数的-join)
+  - [2.1. 使用表别名](#21-使用表别名)
+  - [2.2. 外部联结 outer join](#22-外部联结-outer-join)
+    - [2.2.1. left outer join 和 right outer join](#221-left-outer-join-和-right-outer-join)
+    - [2.2.2. full outer join](#222-full-outer-join)
+  - [2.3. 使用带聚集函数的 join](#23-使用带聚集函数的-join)
 - [3. 各类 join 的示意图](#3-各类-join-的示意图)
 
 <!-- /TOC -->
-<a id="markdown-11-什么是联结" name="11-什么是联结"></a>
 ## 1.1. 什么是联结？
 
 联结（join）是利用 SQL 中的 `select` 语句的一个重要操作。关系数据库中的表中包含各类**关系**，各个表之间通过**外键**相互关联。这些『外键』就是关系（表）之间相互 join 的基础（当然，两个没有外键关联的表也可以关联，只是没有实际意义罢了）。
@@ -31,14 +29,12 @@
 这样，可以看出关系数据库的优点：
 - 可伸缩性好：能适应不断增加的工作量。
 
-<a id="markdown-111-为什么使用联结" name="111-为什么使用联结"></a>
 ### 1.1.1. 为什么使用联结？
 
 将数据分散成多个表有方便之处，如可伸缩性好。但是也有些许不好之处。数据存储在多个表中，检索的语句要稍微麻烦一点。使用联结机制，在一条 `select` 语句中关联表。联结在『运行时』关联表中的正确的行。
 
 > 维护引用完整性： 使用关系表时，比如 `products` 表中插入非法的供应商 ID（即没有在 `vendors` 表中出现的 ID）的供应商产品，则这些产品是不可访问的，因为它们没有关联到某个供应商。为了防止这种情况发生，可指示 MySQL 只允许在 `products` 表中供应商 ID 字段出现合法值（即 `vendors` 中含有的 ID）。这就是维护引用完整性。这通过在表中定义中指定主键和外键来实现。
 
-<a id="markdown-112-创建联结" name="112-创建联结"></a>
 ### 1.1.2. 创建联结
 
 ```sql
@@ -99,7 +95,8 @@ insert into table2 values(1,'LA','123@QQ.COM'),(2,'NY','345@QQ.COM');
 
 以下介绍的各类 `join`，`inner join`，`outer join`，`left outer join`，`right outer join` 等都是从『笛卡儿积』中选取满足 `join` 条件的记录（行）。
 
-<a id="markdown-113-自联结-self-join" name="113-自联结-self-join"></a>
+> `inner join` 的 inner 可以省略，`left outer join` 可以省略 `outer`。
+
 ### 1.1.3. 自联结 self join
 
 SQL Schema 如下:
@@ -147,7 +144,6 @@ where c1.company=c2.company and c1.name='Tom';
 |  1 | Fun4All |  Tom |  5 | Fun4All | Bill |
 
 
-<a id="markdown-114-内部联结-inner-join" name="114-内部联结-inner-join"></a>
 ### 1.1.4. 内部联结 inner join
 
 内部 `join` 又称为『等值』`join`。用 `inner join` 指定表的 `join` 关系，`on` 指明联结条件。如果不加联结条件，检索结果为笛卡尔积结果。加上 `on` 的 `join` 条件，但是会有重复行。如下：
@@ -167,7 +163,6 @@ select * from table1 inner join table2 -- inner 可以省略
 on table1.id=table2.id; -- 也可以是 where 子句
 ~~~
 
-<a id="markdown-115-自然连接-natural-join" name="115-自然连接-natural-join"></a>
 ### 1.1.5. 自然连接 natural join
 
 无论何时对表进行 join，应该至少有一个列出现在不止一个表中（被联结的列）。标准的 join 返回所有数据，相同的列多次出现。**自然联结**可以使得每个列返回一次。
@@ -208,7 +203,6 @@ and prod_id='FB';
 
 > :exclamation: 最好不要让数据库自动完成联结。natural join 关键字在 MySQL 中不再适用。自然 join 的工作完全交给了 user。事实上，几乎用到的都是自然 join。因此，MySQL 中希望将 natural join 的工作交给用户完成。:excalmation: 我们迄今为止建立的每个内联结都是自然联结，很可能永远都不会用到不是自然联结的内联结。因此，无需使用自然 join
 
-<a id="markdown-116-join-多个表" name="116-join-多个表"></a>
 ### 1.1.6. join 多个表
 
 语法如下，
@@ -239,10 +233,8 @@ and prod_id='TNT2';
 
 join 表的用法，join 三个表，然后通过 `where` 的三个过滤条件，返回检索结果。
 
-<a id="markdown-2-高级-join" name="2-高级-join"></a>
 # 2. 高级 join
 
-<a id="markdown-21-使用表别名" name="21-使用表别名"></a>
 ## 2.1. 使用表别名
 
 sql可以给字段和计算字段起别名（导出字段）。同样可以给表起别名。
@@ -254,7 +246,6 @@ and oi.order_num=o.order_num
 and prod_id='TNT2'; 
 ```
 
-<a id="markdown-22-外部联结-outer-join" name="22-外部联结-outer-join"></a>
 ## 2.2. 外部联结 outer join
 
 `outer join` 将 `inner join` 的没有关联的记录也会显示出来。`outer join` 可以保留未匹配关联的记录（行），使用 `select * from table1 left outer join table2 on table1.id=table2.id` 返回（可以和上面的 `inner join` 的结果对比一下）：
@@ -265,7 +256,6 @@ and prod_id='TNT2';
 |  2 | Tony |    2   |   NY   | 345@QQ.COM |
 |  3 | Pony | (null) | (null) |   (null)   |
 
-<a id="markdown-221-left-outer-join-和-right-outer-join" name="221-left-outer-join-和-right-outer-join"></a>
 ### 2.2.1. left outer join 和 right outer join
 
 为了理解 `left outer join` 和 `right outer join` 的区别，看一下使用 `select * from table1 right outer join table2 on table1.id=table2.id` 返回：
@@ -286,7 +276,6 @@ and prod_id='TNT2';
 
 > `left,right outer join` 不可以忽略 `on` 联结条件。
 
-<a id="markdown-222-full-outer-join" name="222-full-outer-join"></a>
 ### 2.2.2. full outer join
 
 `full outer join` 或 `full join`，是左右 join 的结合版本。
@@ -312,7 +301,6 @@ select *from table2 right outer join table1 on table1.id=table2.id;
 
 ---
 
-<a id="markdown-23-使用带聚集函数的-join" name="23-使用带聚集函数的-join"></a>
 ## 2.3. 使用带聚集函数的 join
 
 aggregate function 用来汇总数据，当然可以汇总多个表的数据。即联合 join 一起使用即可。
@@ -324,7 +312,6 @@ group by customers.cust_id;
 ```
 该语句首先使用 `inner join` 将两个表关联，接着 `group by` 进行分组，随后 `count` 对每个组进行计数。
 
-<a id="markdown-3-各类-join-的示意图" name="3-各类-join-的示意图"></a>
 # 3. 各类 join 的示意图
 
 ![](image/sql-join.jpg)
