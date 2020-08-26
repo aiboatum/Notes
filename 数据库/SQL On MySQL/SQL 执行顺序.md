@@ -52,3 +52,37 @@
 - (10) `ORDER BY`: 将虚拟表 VT9 中的记录按照 `<order_by_list>` 进行排序操作，产生虚拟表 VT10;
 
 - (11) `LIMIT`: 取出指定街行的记录，产生虚拟表 VT11，并返回给查询用户
+
+
+## Demo
+
+> [leetcode-database-problem](https://leetcode.com/problems/reformat-department-table/submissions/)
+
+
+如果我们有，
+~~~sql
+-- 先使用 group by id 分组
+-- 然后使用 sum 或 max 聚合
+select id, 
+      sum(case when month='Jan' then revenue else null end) as Jan_Revenue,
+      sum(case when month='Feb' then revenue else null end) as Feb_Revenue,
+      sum(case when month='Mar' then revenue else null end) as Mar_Revenue,
+      sum(case when month='Apr' then revenue else null end) as Apr_Revenue,
+      sum(case when month='May' then revenue else null end) as May_Revenue,
+      sum(case when month='Jun' then revenue else null end) as Jun_Revenue,
+      sum(case when month='Jul' then revenue else null end) as Jul_Revenue,
+      sum(case when month='Aug' then revenue else null end) as Aug_Revenue,
+      sum(case when month='Sep' then revenue else null end) as Sep_Revenue,
+      sum(case when month='Oct' then revenue else null end) as Oct_Revenue,
+      sum(case when month='Nov' then revenue else null end) as Nov_Revenue,
+      sum(case when month='Dec' then revenue else null end) as Dec_Revenue
+FROM Department
+group by id
+order by id
+~~~
+
+此语句的执行顺序是：
+1. 执行 `FROM` 子句，形成一个临时表 T1
+2. 对 T1 执行 `GROUP BY` 子句，形成临时表 T2
+3. 对 T2 执行 `CASE` 函数
+4. 最后使用 `SUM` 函数
