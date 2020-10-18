@@ -2,4 +2,9 @@
     "editor.wordWrap": "on",
     "markdown-pdf.convertOnSave": true,
     "markdown-pdf.breaks": true,
+    "files.associations": {
+        "vector": "cpp",
+        "xstring": "cpp",
+        "iostream": "cpp"
+    },
 }
