@@ -1,3 +1,4 @@
+<a id="markdown-1-创建表" name="1-创建表"></a>
 # 1. 创建表
 <!-- TOC -->
 
@@ -15,7 +16,7 @@
 ```sql
 create table customers(
     -- 如果未指定NULL属性，则默认可以为NULL值
-    cust_id int NOT NULL AUTO_INCREMENT,
+    cust_id int NOT NULL AUTO_INCREMENT,    -- 这里的 NOT NULL 是列级完整性约束
     cust_name char(50) NOT NULL,    -- 该列不可以是NULL值
     ...,
     PRIMARY KEY(cust_id)    -- 指定主键，也可以在某个字段后加上 primay key
@@ -30,6 +31,7 @@ create table customers(
 create table if not exists customers(...);
 ~~~
 
+<a id="markdown-11-主键再介绍" name="11-主键再介绍"></a>
 ## 1.1. 主键再介绍
 
 可以使用多个字段作主键，
@@ -37,16 +39,18 @@ create table if not exists customers(...);
 primary key(field1,field2,...)
 ```
 
+<a id="markdown-12-使用-auto_increment" name="12-使用-auto_increment"></a>
 ## 1.2. 使用 AUTO_INCREMENT
 
 当主键标识，除了唯一以外没有其他意思，例如，订单号可以任意，只要唯一即可。因此，最简单的就是让其递增即可。例如，
 ```sql
 cust_id int NOT NULL AUTO_INCREMENT
 ```
-其中的 `AUTO_INCREMENT` 指示 MySQL，本列每次增加一条记录时自动增量，每次执行 insert，MySQL 自动对其增量，给该记录赋予下一个可用的值。这样每一条记录都是可用的唯一的 `cust_id`，从而可以作为主键。
+其中的 `AUTO_INCREMENT` 指示 MySQL，本列每次增加一条记录时自动增量，每次执行 `insert`，MySQL 自动对其增量，给该记录赋予下一个可用的值。这样每一条记录都是可用的唯一的 `cust_id`，从而可以作为主键。
 
-> 每个表只允许一个 `AUTO_INCREMENT` 字段，而且它必须被索引。自动填充的值，是根据指定的初始值，然后类似填充脚本生成。
+每个表只允许一个 `AUTO_INCREMENT` 字段，**而且它必须被索引**。自动填充的值，是根据指定的初始值，然后类似填充脚本生成。这样形成的索引有许多优点，如物理页更加紧凑，具体见 [索引](../索引.md)。
 
+<a id="markdown-13-指定默认值" name="13-指定默认值"></a>
 ## 1.3. 指定默认值
 
 通过 `crete table` 语句中的 `default` 关键字指定。
@@ -59,6 +63,7 @@ create table orderitems(
     primary key (order_num,order_item)
 )ENGINE=InnoDB;
 ```
+<a id="markdown-14-删除表-drop" name="14-删除表-drop"></a>
 ## 1.4. 删除表 Drop
 
 使用 `drop` 删除关系（表），用法如下：
@@ -67,12 +72,14 @@ drop table table_name;
 ~~~
 
 
+<a id="markdown-15-引擎类型" name="15-引擎类型"></a>
 ## 1.5. 引擎类型
 
 每个 DBMS 都有一个处理数据的引擎。例如 `create table` 时，需要指定哪一个引擎负责创建。使用 `select`时也是内部引擎负责处理请求。当然，如果未指定，将会使用默认的引擎。
 
 > 不同的引擎有不同的功能和特性。
 
+<a id="markdown-2-更新表更新表的定义结构如添加字段等" name="2-更新表更新表的定义结构如添加字段等"></a>
 # 2. 更新表（更新表的定义，结构，如添加字段等）
 
 一般来说，表的定义一开始就要设计好，不应该有较大改动。通过 `alter table` 更改表的结构，定义等。

@@ -20,14 +20,63 @@ cache 地址 = cache 行号 + cache 块内地址
 
 根据 CPU 提供的主存地址中，可以提取出 cache 地址。然后 cache 中存储的是
 ```
-tags | data|
-...  |...  | 
+tags + data
 ```
+事实上，从主存地址到 cache 的访问，是通过标记阵列来的，而标记阵列的由下面的标记项构成
+```
+标记项 = 有效位 + 脏位 + 替换控制位 + data
+```
+
+对于 2-路组相联而言，标记阵列是一个 2 列 n 行的矩阵。
 
 ## 为什么中断一定会保存 PC 和 PSW？
 
-中断（外中断）一定是在指令的执行周期结束后才会响应，因此不需要保存 IR 内容，只需要保存 PC 内容。而 PSW 内容包括 CF（进位标志）、ZF（结果为零标志）、SF（符号标志符）、OF（溢出标志）、**IF（interruption flag）、VIF（虚拟中断标志）、VIP（虚拟中断带决）**等等。
+中断（外中断）一定是在指令的执行周期结束后才会响应，因此不需要保存 IR 内容，只需要保存 PC 内容。而 PSW 内容包括 CF（进位标志）、ZF（结果为零标志）、SF（符号标志符）、OF（溢出标志）、**IF（interruption flag）**、**VIF（虚拟中断标志）**、**VIP（虚拟中断带决）** 等等。
 
 这之中和中断相关的至少有 3 个标志位，因此需要保存 PSW 内容。PSW 可以指明当前处于管态还是目态。可以反映指令执行后的特征。可以指出屏蔽字。
 
 目态 $\rightarrow$ 管态之间的转换只能通过中断，而管态 $\rightarrow$ 目态可以通过设置 PSW 实现。
+
+## CPU、MPU（微处理器）、MCU（微控制器）
+
+> https://blog.csdn.net/daijingxin/article/details/69359670
+
+CPU 发展有三个分支，即：
+
+* DSP
+* MCU
+* MPU
+
+一般来说，微处理器也是 CPU 的一种，CPU 是一种概称。而 MCU 在微指令知识那里指的是『微控制器』，对应于控制器。
+
+
+## cache-主存 映射
+
+1. 直接映射
+
+```
+主存地址 = tags + cache 行号 + 块内 offset
+
+// cache 中存储
+tags + data 
+
+cache 地址 = cache 行号 + 块内 offset
+```
+
+进行访存时，首先根据主存地址的中间的 `cache 行号`，直接在 cache 中找到对应的 `tags`，然后进行对比即可。
+
+2. 全相联映射
+
+由于全相联映射中，没有了之前的如下关系
+$$主存块号 \equiv cache 行号 ~(mod~2^c)$$
+其中 $2^c$ 为cache 中块的总数。
+
+```
+主存地址 = tags + offset
+
+cache 中存储的内容为 = tags + data
+
+cache 地址 = 块内 offset ? 
+```
+
+由此，进行 cache 访问的时候，每一个块有可能映射到任一 cache 块。因此，必须和所有的 tags 比较，即所有 cache 行进行比较。 
