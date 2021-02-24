@@ -71,9 +71,9 @@ FUNCTION {default.is.dash.repeated.names} { #1 }
 3. 可以对生成的 `.aux` 文件使用 `bibtex` 编译。
 4. 使用 `pdflatex` 对主文件编译两次。
 
-该方法在某些场景下有效。
+该方法==在某些场景下==有效。
 
 ## 数学字体加黑
 
 1. 使用 `\usepackage{amsmath}`，然后使用 `\boldsymbol{\sigma}`，`\mathbf{}` 只对公式中的普通字母有效
-2. 使用 `\usepackage{bm}`，`\bm{}` 最好
+2. 使用 `\usepackage{bm}`，`\bm{}` 最好（==但是使用 `\bm{}` 在某些情况下会出现问题==）
