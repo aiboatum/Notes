@@ -92,7 +92,7 @@ FUNCTION {default.is.dash.repeated.names} { #1 }
 在 Github 上中，使用 MathJax Plugin for Github 插件时渲染公式的时候，会出现一些问题：
 
 * 无法渲染大括号 `{}`
-* 渲染 $\$\LaTeX$$ 公式的换行 `\\` 时，无法渲染出换行效果
+* 渲染 $\LaTeX$ 公式的换行 `\\` 时，无法渲染出换行效果
 * 无法渲染 `_` 下标
 * 无法渲染 `*` 
 * 脚注问题：解决方案不够简洁，暂时不解决此类问题
@@ -107,7 +107,7 @@ $A=\{1,2,\ldots,n \}$
 
 渲染后类似于 $A=1,2,\ldots,n$。
 
-应带使用 $\$\LaTeX$$ 定界符，即 $\lbrace 1,2,\ldots, n\rbrace $ 即可。
+应带使用 $\LaTeX$ 定界符，即 $\lbrace 1,2,\ldots, n\rbrace $ 即可。
 
 2. 无法渲染换行
 
@@ -116,14 +116,14 @@ $A=\{1,2,\ldots,n \}$
 
 3. 无法解析 `_` 符号
 
-在 $\$\LaTeX$$ 中 `_` 表示下标，而在 Markdown 中 `_` 会生成斜体效果。
+在 $\LaTeX$ 中 `_` 表示下标，而在 Markdown 中 `_` 会生成斜体效果。
 
 4. 对于 `*`，使用 `\ast` 符号
 
 
 ### 使用 HTML 块标签解决 display 公式渲染问题
 
-所以在公示的下标符号 `_` 中，**有时** 会被 Markdown 吃掉，表成 HTML 的标记 `<i>` 从而造成 $\$\LaTeX$$ 的数学公式显示不正常。
+所以在公示的下标符号 `_` 中，**有时** 会被 Markdown 吃掉，表成 HTML 的标记 `<i>` 从而造成 $\LaTeX$ 的数学公式显示不正常。
 
 鉴于 Markdown 和 HTML 的关系，我们可以用 `<div></div>` 块标签来解决 display 公式的渲染问题，但是对于行间公式则不可以。
 
@@ -144,3 +144,5 @@ $$
 但是 aurora 的已经早已没人维护了，使用起来也会有许多问题。
 
 最后，排版能用 $\LaTeX$ 就不用 Word。
+
+如何使用 aurora 插件参见 http://www.yuerya.me/post/aurora-%7C-latex-in-word 和 https://blog.csdn.net/m0_37907383/article/details/90238946?utm_medium=distribute.pc_relevant.none-task-blog-baidujs_title-0&spm=1001.2101.3001.4242。
