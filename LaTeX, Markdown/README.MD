@@ -1,3 +1,15 @@
+
+- [$\LaTeX$ QA](#latex-qa)
+  - [$\LaTeX$ 用来做什么？](#latex-用来做什么)
+  - [$\LaTeX$ 如何设置中文字体？](#latex-如何设置中文字体)
+  - [$\LaTeX$ IEEE 参考文献同名作者默认缺省](#latex-ieee-参考文献同名作者默认缺省)
+  - [编译 bibtex 时报错 “I couldn't open file name `xxxx.aux'.” 对应](#编译-bibtex-时报错-i-couldnt-open-file-name-xxxxaux-对应)
+  - [数学字体加黑](#数学字体加黑)
+  - [MathJax Plugin for Github 的渲染问题](#mathjax-plugin-for-github-的渲染问题)
+    - [使用 HTML 块标签解决 display 公式渲染问题](#使用-html-块标签解决-display-公式渲染问题)
+  - [Word 中如何使用 $\LaTeX$ 代码](#word-中如何使用-latex-代码)
+  - [在 Markdown 公式中编号？](#在-markdown-公式中编号)
+  - [Markdown 和 HTML 混排？](#markdown-和-html-混排)
 # $\LaTeX$ QA
 
 $\LaTeX$ 学习文档：见 [$\LaTeX$ Studio 学习文档](https://www.latexstudio.net/archives/51802.html)
@@ -95,7 +107,7 @@ FUNCTION {default.is.dash.repeated.names} { #1 }
 * 渲染 $\LaTeX$ 公式的换行 `\\` 时，无法渲染出换行效果
 * 无法渲染 `_` 下标
 * 无法渲染 `*` 
-* 脚注问题：解决方案不够简洁，暂时不解决此类问题
+* 脚注问题：解决方案不够简洁
 
 当然还有其他一些渲染问题，这些问题的出现主要是因为 Markdown 语法默认渲染效果与 Mathjax 语法互相冲突的问题。可见 https://segmentfault.com/a/1190000007261752 和 https://zhuanlan.zhihu.com/p/108766968。
 
@@ -119,6 +131,38 @@ $A=\{1,2,\ldots,n \}$
 在 $\LaTeX$ 中 `_` 表示下标，而在 Markdown 中 `_` 会生成斜体效果。
 
 4. 对于 `*`，使用 `\ast` 符号
+5. 脚注问题
+
+* Markdown 标准的原生脚注[^1]
+* HTML `<a>` 标签形式的脚注<a name="a2">2</a>
+
+```html
+<a name="a2">2</a>
+<sup>[2](#a2)</sup>：a标签脚注说明
+```
+
+* 上标形式+锚点，支持来回跳<sup id="a3">[3](#f3)</sup>
+
+
+```html
+<sup id="a3">[3](#f3)</sup>
+<b id="f3">3</b> 双向跳转脚注说明 [↩](#a3)
+```
+
+* 上标+锚点双向<sup id="a4">[4](#f4)</sup>
+* 仿维基百科格式的上标+锚点双向<sup id="a5">[[5]](#f5)</sup>
+
+
+[^1]: 原生脚注说明
+
+<sup>[2](#a2)</sup>：a标签脚注说明
+
+<b id="f3">3</b> 双向跳转脚注说明 [↩](#a3)
+
+<b id="f4">4</b> 上标+双向跳转脚注说明 [↩](#a4)
+
+<span id="f5">5. [^](#a5)</span> wiki 上标+双向跳转脚注说明
+
 
 
 ### 使用 HTML 块标签解决 display 公式渲染问题
@@ -145,4 +189,23 @@ $$
 
 最后，排版能用 $\LaTeX$ 就不用 Word。
 
-如何使用 aurora 插件参见 http://www.yuerya.me/post/aurora-%7C-latex-in-word 和 https://blog.csdn.net/m0_37907383/article/details/90238946?utm_medium=distribute.pc_relevant.none-task-blog-baidujs_title-0&spm=1001.2101.3001.4242。
+如何使用 aurora 插件参见 
+* http://www.yuerya.me/post/aurora-%7C-latex-in-word 
+* https://blog.csdn.net/m0_37907383/article/details/90238946?utm_medium=distribute.pc_relevant.none-task-blog-baidujs_title-0&spm=1001.2101.3001.4242。
+
+## 在 Markdown 公式中编号？
+
+使用 `tag` 标签，效果如下
+
+<div>
+$$
+\mathrm{e}^{i\pi} + 1 = 0. \tag{1}
+$$
+</div>
+
+## Markdown 和 HTML 混排？
+
+有时候，有些效果用 Markdown 语法可能无法直接实现，这个时候可以直接嵌入 HTML 语句即可实现高级效果。**但是，应当注意，太多复杂的效果不应使用 Markdown 来编写，这和使用 Markdown 的初衷相违背。**
+
+可参见下面的文章
+* [Markdown 和 HTML 混排](https://ucren.com/blog/archives/747)
