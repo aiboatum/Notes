@@ -10,6 +10,7 @@
   - [Word 中如何使用 $\LaTeX$ 代码](#word-中如何使用-latex-代码)
   - [在 Markdown 公式中编号？](#在-markdown-公式中编号)
   - [Markdown 和 HTML 混排？](#markdown-和-html-混排)
+  - [$\LaTeX$ algorithm 包中的标题编号如何自定义？](#latex-algorithm-包中的标题编号如何自定义)
 # $\LaTeX$ QA
 
 $\LaTeX$ 学习文档：见 [$\LaTeX$ Studio 学习文档](https://www.latexstudio.net/archives/51802.html)
@@ -209,3 +210,10 @@ $$
 
 可参见下面的文章
 * [Markdown 和 HTML 混排](https://ucren.com/blog/archives/747)
+
+
+## $\LaTeX$ algorithm 包中的标题编号如何自定义？
+
+```tex
+\setcounter{algorithm}{序号}
+```
